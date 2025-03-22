@@ -17,6 +17,7 @@ model User {
   id          Int          @id @default(autoincrement())
   email       String       @unique
   name        String       @unique
+  picture     String?
   userAnswers UserAnswer[]
   role        UserRole     @default(PARTICIPANT)
   createdAt   DateTime     @default(now())
