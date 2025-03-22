@@ -17,42 +17,10 @@ model User {
   id          Int          @id @default(autoincrement())
   email       String       @unique
   name        String       @unique
-  quizzes     Quiz[]
   userAnswers UserAnswer[]
-  userStats   UserStats[]
   role        UserRole     @default(PARTICIPANT)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
-}
-
-model Quiz {
-  id                Int           @id @default(autoincrement())
-  title             String
-  description       String?
-  questions         Question[]
-  userId            Int
-  user              User          @relation(fields: [userId], references: [id])
-  tags              Tag[]
-  categories        Category[]
-  filters           Json?
-  /* Exemple de structure filters:
-  {
-    "selectedDifficulty": ["EASY", "MEDIUM"],
-    "selectedTypes": ["MULTIPLE_CHOICE", "SINGLE_CHOICE"],
-    "numberOfQuestions": 10
-  }
-  */
-  score             Float?
-  status            SessionStatus @default(IN_PROGRESS)
-  startedAt         DateTime      @default(now())
-  finishedAt        DateTime?
-  parentQuizId      Int?
-  parentQuiz        Quiz?         @relation("QuizHistory", fields: [parentQuizId], references: [id])
-  childQuizzes      Quiz[]        @relation("QuizHistory")
-  userAnswers       UserAnswer[]
-  attemptNumber     Int           @default(1)
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt
 }
 
 model Question {
@@ -99,7 +67,6 @@ model Question {
       "allowPartial": true
     }
   */
-  quizzes       Quiz[]
   userAnswers   UserAnswer[]
   difficulty    Difficulty    @default(MEDIUM)
   type          QuestionType  @default(SINGLE_CHOICE)
@@ -115,7 +82,6 @@ model Category {
   name        String     @unique
   description String?
   questions   Question[]
-  quizzes     Quiz[]
   createdAt   DateTime   @default(now())
 }
 
@@ -123,8 +89,6 @@ model Tag {
   id          Int        @id @default(autoincrement())
   name        String     @unique
   questions   Question[]
-  userStats   UserStats[]
-  quizzes     Quiz[]
   createdAt   DateTime   @default(now())
 }
 
@@ -132,8 +96,6 @@ model UserAnswer {
   id         Int          @id @default(autoincrement())
   userId     Int
   user       User         @relation(fields: [userId], references: [id])
-  quizId     Int 
-  quiz       Quiz         @relation(fields: [quizId], references: [id])
   questionId Int
   question   Question     @relation(fields: [questionId], references: [id])
   answer     Json
@@ -165,44 +127,10 @@ model UserAnswer {
   createdAt  DateTime     @default(now())
 }
 
-model UserStats {
-  id          Int      @id @default(autoincrement())
-  userId      Int
-  user        User     @relation(fields: [userId], references: [id])
-  tagId       Int
-  tag         Tag      @relation(fields: [tagId], references: [id])
-  stats       Json     // Stocke totalTries, averageTime, successRate
-  /* Exemple de structure stats:
-  {
-    "totalTries": 42,
-    "averageTime": 120.5,  // en secondes
-    "successRate": 0.85,   // pourcentage en décimal
-    "lastAttempt": "2024-03-13T15:30:00Z",
-    "streaks": {
-      "current": 5,
-      "best": 12
-    },
-    "byDifficulty": {
-      "EASY": { "tries": 20, "successRate": 0.90 },
-      "MEDIUM": { "tries": 15, "successRate": 0.80 },
-      "HARD": { "tries": 7, "successRate": 0.60 }
-    }
-  }
-  */
-  updatedAt   DateTime @updatedAt
-  @@unique([userId, tagId])
-}
-
 enum Difficulty {
   EASY
   MEDIUM
   HARD
-}
-
-enum SessionStatus {
-  IN_PROGRESS
-  COMPLETED
-  ABANDONED
 }
 
 enum QuestionType {
