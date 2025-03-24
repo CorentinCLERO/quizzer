@@ -17,7 +17,7 @@ export function LoginForm({
 }: React.ComponentPropsWithoutRef<"div">) {
   const handleGoogleLogin = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    signIn("google", { callbackUrl: "/login" });
+    signIn("google", { callbackUrl: "/" });
   };
 
   return (

@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { BadgeCheck, LogOut } from "lucide-react";
+import Link from "next/link";
 
 export default function Header({
   className,
@@ -27,7 +28,9 @@ export default function Header({
       {...props}
     >
       <div>
-        <h1 className="text-xl font-bold">Quizzer</h1>
+        <Link href="/">
+          <h1 className="text-xl font-bold">Quizzer</h1>
+        </Link>
       </div>
       <div className="flex gap-5">
         <DropdownMenu>

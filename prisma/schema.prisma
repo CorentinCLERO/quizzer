@@ -40,8 +40,8 @@ model Question {
     Pour MULTIPLE_CHOICE ou SINGLE_CHOICE:
     {
       "options": [
-        { "id": 1, "text": "Réponse 1", "isCorrect": true },
-        { "id": 2, "text": "Réponse 2", "isCorrect": false }
+        { "text": "Réponse 1", "isCorrect": true },
+        { "text": "Réponse 2", "isCorrect": false }
       ]
     }
 
