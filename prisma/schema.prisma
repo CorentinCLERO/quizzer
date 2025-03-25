@@ -69,8 +69,8 @@ model Question {
     }
   */
   userAnswers   UserAnswer[]
-  difficulty    Difficulty    @default(MEDIUM)
-  type          QuestionType  @default(SINGLE_CHOICE)
+  difficulty    Difficulty
+  type          QuestionType
   tags          Tag[]
   categories    Category[]
   hint          String?
