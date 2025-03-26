@@ -65,6 +65,10 @@ export const QuestionProvider = ({ children }: { children: ReactNode }) => {
             left: "",
             right: "",
           },
+          {
+            left: "",
+            right: "",
+          },
         ];
       case "ORDERING":
         return [
