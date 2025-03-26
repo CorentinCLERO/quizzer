@@ -1,21 +1,13 @@
 "use client";
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
-import { Difficulty, Explanation, QuestionAnswers } from "@/types";
+import { Question } from "@/types";
 import { QuestionType } from "@prisma/client";
 
-interface QuestionForm {
-  text: string;
-  explanation?: Explanation;
-  answers: QuestionAnswers;
-  difficulty: Difficulty;
-  type: QuestionType;
-  hint?: string;
-}
 
 interface QuestionContextProps {
-  questionToAdd: QuestionForm;
-  setQuestionToAdd: React.Dispatch<React.SetStateAction<QuestionForm>>;
+  questionToAdd: Omit<Question, 'id' | 'createdAt' | 'updatedAt' >;
+  setQuestionToAdd: React.Dispatch<React.SetStateAction<Omit<Question, 'id' | 'createdAt' | 'updatedAt' >>>;
 }
 
 const QuestionContext = createContext<QuestionContextProps | undefined>(
@@ -23,7 +15,7 @@ const QuestionContext = createContext<QuestionContextProps | undefined>(
 );
 
 export const QuestionProvider = ({ children }: { children: ReactNode }) => {
-  const [questionToAdd, setQuestionToAdd] = useState<QuestionForm>({
+  const [questionToAdd, setQuestionToAdd] = useState<Omit<Question, 'id' | 'createdAt' | 'updatedAt' >>({
     text: "",
     explanation: {
       short: "",
