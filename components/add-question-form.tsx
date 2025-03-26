@@ -11,16 +11,24 @@ const questionTypes = [
   { value: 'ORDERING', label: 'Ordering' },
 ];
 
+const difficultyLevels = [
+  { value: 'EASY', label: 'Easy' },
+  { value: 'MEDIUM', label: 'Medium' },
+  { value: 'HARD', label: 'Hard' },
+];
+
 function AddQuestionForm() {
   const { questionToAdd, setQuestionToAdd } = useQuestionContext();
 
   const changeValue = (valueType: string, value: string) => {
     setQuestionToAdd(prev => ({ ...prev, [valueType]: value }));
   };
+
   return (
-    <div>
+    <>
       <MultiSelect defaultValue={questionToAdd.type} name="Select the type of question" values={questionTypes} onChange={(e) => changeValue("type", e)}/>
-    </div>
+      <MultiSelect defaultValue={questionToAdd.difficulty} name="Select the difficulty level" values={difficultyLevels} onChange={(e) => changeValue("difficulty", e)}/>
+    </>
   );
 }
 

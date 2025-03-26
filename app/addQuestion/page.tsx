@@ -7,8 +7,8 @@ import React from 'react';
 function AddQuestionPage() {
   return (
     <QuestionProvider>
-      <div>
-        <h1 className='my-2 mx-5'>Add a question :</h1>
+      <div className='flex flex-col gap-3'>
+        <h1>Add a question :</h1>
         <AddQuestionForm />
       </div>
     </QuestionProvider>
