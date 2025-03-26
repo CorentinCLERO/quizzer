@@ -53,7 +53,7 @@ export type QuestionAnswers =
 
 export interface Question {
   id: number;
-  text: string;
+  question: string;
   explanation?: Explanation;
   answers: QuestionAnswers;
   difficulty: Difficulty;

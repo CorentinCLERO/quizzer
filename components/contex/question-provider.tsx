@@ -16,16 +16,16 @@ const QuestionContext = createContext<QuestionContextProps | undefined>(
 
 export const QuestionProvider = ({ children }: { children: ReactNode }) => {
   const [questionToAdd, setQuestionToAdd] = useState<Omit<Question, 'id' | 'createdAt' | 'updatedAt' >>({
-    text: "",
-    explanation: {
-      short: "",
-      long: "",
-      resources: [],
-    },
+    question: "",
+    // explanation: {
+    //   short: "",
+    //   long: "",
+    //   resources: [],
+    // },
     answers: answersInitialisation("SINGLE_CHOICE"),
     difficulty: "MEDIUM",
     type: "SINGLE_CHOICE",
-    hint: "",
+    // hint: "",
   });
 
   useEffect(() => {
