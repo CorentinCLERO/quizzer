@@ -12,10 +12,10 @@ export default function AnswersForm() {
     value: string | boolean,
     index: number
   ) => {
-    if (valueType === "text")
+    if (valueType === "text" && typeof value === 'string' )
       setQuestionToAdd((prev) => ({
         ...prev,
-        answers: prev.answers.map(
+        answers: (prev.answers as SingleChoiceAnswers[]).map(
           (answer: SingleChoiceAnswers, answerIndex: number) =>
             answerIndex === index ? { ...answer, text: value } : answer
         ),
@@ -23,7 +23,7 @@ export default function AnswersForm() {
     else if (valueType === "isCorrect" && value === true)
       setQuestionToAdd((prev) => ({
         ...prev,
-        answers: prev.answers.map(
+        answers: (prev.answers as SingleChoiceAnswers[]).map(
           (answer: SingleChoiceAnswers, answerIndex: number) =>
             answerIndex === index
               ? { ...answer, isCorrect: true }
