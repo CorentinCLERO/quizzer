@@ -1,7 +1,7 @@
 'use client';
 
 import { QuestionProvider } from '@/components/contex/questionProvider';
-import AddQuestionForm from '@/components/multiselect';
+import AddQuestionForm from '@/components/add-question-form';
 import React from 'react';
 
 function AddQuestionPage() {

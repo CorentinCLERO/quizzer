@@ -1,27 +1,35 @@
 import React from 'react';
-import MultiSelect from './select-question-type';
-import { useQuestionContext } from './contex/questionProvider';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
-const questionTypes = [
-  { value: 'MULTIPLE_CHOICE', label: 'Multiple choice' },
-  { value: 'SINGLE_CHOICE', label: 'Single choice' },
-  { value: 'TRUE_FALSE', label: 'True/False' },
-  { value: 'TEXT', label: 'Complete text' },
-  { value: 'MATCHING', label: 'Matching items' },
-  { value: 'ORDERING', label: 'Ordering' },
-];
+interface MultiSelectProps {
+  name: string;
+  values: { value: string; label: string; }[];
+  defaultValue?: string;
+  onChange?: (value: string) => void;
+}
 
-function AddQuestionForm() {
-  const { setQuestionToAdd } = useQuestionContext();
-
-  const changeValue = (valueType: string, value: string) => {
-    setQuestionToAdd(prev => ({ ...prev, [valueType]: value }));
-  };
+function MultiSelect({ name, values, defaultValue, onChange }: MultiSelectProps) {
   return (
-    <div>
-      <MultiSelect name="Select the type of question" values={questionTypes} onChange={(e) => changeValue("type", e)}/>
-    </div>
+    <Select onValueChange={onChange} defaultValue={defaultValue}>
+      <SelectTrigger className="w-[230px] my-1 mx-5">
+        <SelectValue placeholder={name} />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          {values.map((value, index) => (
+            <SelectItem key={index} value={value.value}>{value.label}</SelectItem>
+          ))}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
   );
 }
 
-export default AddQuestionForm;
+export default MultiSelect;

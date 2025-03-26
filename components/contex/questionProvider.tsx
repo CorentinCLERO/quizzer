@@ -30,7 +30,7 @@ export const QuestionProvider = ({ children }: { children: ReactNode }) => {
     },
     answers: {} as QuestionAnswers,
     difficulty: 'MEDIUM',
-    type: '' as QuestionType,
+    type: 'SINGLE_CHOICE',
     hint: '',
   });
 
