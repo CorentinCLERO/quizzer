@@ -1,6 +1,6 @@
 import React from "react";
 import MultiSelect from "./multiselect";
-import { useQuestionContext } from "./contex/question-provider";
+import { useQuestionContext } from "./providers/question-provider";
 import { Input } from "./ui/input";
 import AnswersForm from "./answers-form";
 

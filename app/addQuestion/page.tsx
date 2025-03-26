@@ -1,6 +1,6 @@
 'use client';
 
-import { QuestionProvider } from '@/components/contex/question-provider';
+import { QuestionProvider } from '@/components/providers/question-provider';
 import AddQuestionForm from '@/components/add-question-form';
 import React from 'react';
 

@@ -1,35 +1,67 @@
-import { useQuestionContext } from "./contex/question-provider";
+import { SingleChoiceAnswers } from "@/types";
+import { useQuestionContext } from "./providers/question-provider";
 import { Input } from "./ui/input";
+import { Switch } from "./ui/switch";
+import { Button } from "./ui/button";
 
 export default function AnswersForm() {
-    const { questionToAdd, setQuestionToAdd } = useQuestionContext();
+  const { questionToAdd, setQuestionToAdd } = useQuestionContext();
 
-    const changeValue = (valueType: string, value: string) => {
-        if (valueType === "hint" && value === "") {
-            setQuestionToAdd((prev) => ({ ...prev, hint: undefined }));
-            return;
-        }
-        setQuestionToAdd((prev) => ({ ...prev, [valueType]: value }));
-    };
+  const changeSingleChoiceValue = (
+    valueType: string,
+    value: string | boolean,
+    index: number
+  ) => {
+    if (valueType === "text")
+      setQuestionToAdd((prev) => ({
+        ...prev,
+        answers: prev.answers.map(
+          (answer: SingleChoiceAnswers, answerIndex: number) =>
+            answerIndex === index ? { ...answer, text: value } : answer
+        ),
+      }));
+    else if (valueType === "isCorrect" && value === true)
+      setQuestionToAdd((prev) => ({
+        ...prev,
+        answers: prev.answers.map(
+          (answer: SingleChoiceAnswers, answerIndex: number) =>
+            answerIndex === index
+              ? { ...answer, isCorrect: true }
+              : { ...answer, isCorrect: false }
+        ),
+      }));
+  };
 
-    if (questionToAdd.type === "SINGLE_CHOICE") {
-        return (
-            <>
-                {questionToAdd.answers.map((answer, index) => (
-                    <Input
-                        key={index}
-                        type="text"
-                        placeholder="Answer"
-                        onChange={(e) => {
-                            const newAnswers = [...questionToAdd.answers];
-                            newAnswers[index].text = e.target.value;
-                            setQuestionToAdd({ ...questionToAdd, answers: newAnswers });
-                        }}
-                        value={answer.text}
-                    />
-                ))}
-                <div>Add a new answer</div>
-            </>
-        );
-    }
+  if (questionToAdd.type === "SINGLE_CHOICE") {
+    const singleChoiceAnswers = questionToAdd.answers as SingleChoiceAnswers[];
+    return (
+      <>
+        {singleChoiceAnswers.map(
+          (answer: SingleChoiceAnswers, index: number) => (
+            <div
+              key={index}
+              className="flex items-center justify-between gap-2"
+            >
+              <Input
+                type="text"
+                placeholder={`Answer ${index + 1}`}
+                onChange={(e) => {
+                  changeSingleChoiceValue("text", e.target.value, index);
+                }}
+                value={answer.text}
+              />
+              <Switch
+                id={`answer${index}`}
+                checked={answer.isCorrect}
+                onCheckedChange={(e) =>
+                  changeSingleChoiceValue("isCorrect", e.valueOf(), index)
+                }
+              />
+            </div>
+          )
+        )}
+        <Button />
+      </>
+    );
+  }
 }
