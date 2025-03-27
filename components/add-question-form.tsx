@@ -3,6 +3,9 @@ import MultiSelect from "./multiselect";
 import { useQuestionContext } from "./providers/question-provider";
 import { Input } from "./ui/input";
 import AnswersForm from "./answers-form";
+import { Button } from "./ui/button";
+import { Textarea } from "./ui/textarea";
+import ExplanationForm from "./explanation-form";
 
 const questionTypes = [
   { value: "SINGLE_CHOICE", label: "Single choice" },
@@ -23,42 +26,43 @@ function AddQuestionForm() {
   const { questionToAdd, setQuestionToAdd } = useQuestionContext();
 
   const changeValue = (valueType: string, value: string) => {
-    if (valueType === "hint" && value === "") {
-      setQuestionToAdd((prev) => ({ ...prev, hint: undefined }));
-      return;
-    }
     setQuestionToAdd((prev) => ({ ...prev, [valueType]: value }));
   };
 
   return (
     <>
-      <div>Type :</div>
-      <MultiSelect
-        defaultValue={questionToAdd.type}
-        name="Select the type of question"
-        values={questionTypes}
-        onChange={(e) => changeValue("type", e)}
-      />
-      <div>Difficulty :</div>
-      <MultiSelect
-        defaultValue={questionToAdd.difficulty}
-        name="Select the difficulty level"
-        values={difficultyLevels}
-        onChange={(e) => changeValue("difficulty", e)}
-      />
-      <Input
-        type="text"
+      <div>
+        Type :
+        <MultiSelect
+          defaultValue={questionToAdd.type}
+          name="Select the type of question"
+          values={questionTypes}
+          onChange={(e) => changeValue("type", e)}
+        />
+      </div>
+      <div>
+        Difficulty :
+        <MultiSelect
+          defaultValue={questionToAdd.difficulty}
+          name="Select the difficulty level"
+          values={difficultyLevels}
+          onChange={(e) => changeValue("difficulty", e)}
+        />
+      </div>
+      <Textarea
         placeholder="Question"
         onChange={(e) => changeValue("text", e.target.value)}
         value={questionToAdd.question}
       />
+      <AnswersForm/>
       <Input
         type="text"
         placeholder="Hint"
         onChange={(e) => changeValue("hint", e.target.value)}
         value={questionToAdd.hint}
       />
-      <AnswersForm/>
+      <ExplanationForm />
+      <Button onClick={() => console.log(questionToAdd)}>Create question</Button>
     </>
   );
 }

@@ -60,7 +60,7 @@ export default function AnswersForm() {
     };
 
     return (
-      <>
+      <div className="flex flex-col gap-2">
         {singleChoiceAnswers.map(
           (answer: SingleChoiceAnswers, index: number) => (
             <div
@@ -91,7 +91,7 @@ export default function AnswersForm() {
         <Button onClick={addAnswer} variant="outline">
           Add answer
         </Button>
-      </>
+      </div>
     );
   } else if (questionToAdd.type === "MULTIPLE_CHOICE") {
     const multipleChoiceAnswers = questionToAdd.answers as MultipleChoiceAnswers[];
@@ -136,7 +136,7 @@ export default function AnswersForm() {
     };
 
     return (
-      <>
+      <div className="flex flex-col gap-2">
         {multipleChoiceAnswers.map(
           (answer: MultipleChoiceAnswers, index: number) => (
             <div
@@ -167,7 +167,7 @@ export default function AnswersForm() {
         <Button onClick={addAnswer} variant="outline">
           Add answer
         </Button>
-      </>
+      </div>
     );
   } else if (questionToAdd.type === "TRUE_FALSE") {
     const trueFalseAnswer = questionToAdd.answers as TrueFalseAnswers;
@@ -180,7 +180,7 @@ export default function AnswersForm() {
     };
 
     return (
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2">
         <Switch
           id="trueFalseAnswer"
           checked={trueFalseAnswer.isTrue}
@@ -205,7 +205,7 @@ export default function AnswersForm() {
     };
 
     return (
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-2">
         <Input
           type="text"
           placeholder="Correct Answer"

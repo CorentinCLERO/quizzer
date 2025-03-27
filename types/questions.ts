@@ -62,3 +62,16 @@ export interface Question {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface Category {
+  id: number
+  name: string
+  description?: string
+  createdAt: Date
+}
+
+export interface Tag {
+  id: number
+  name: string
+  createdAt: Date
+}

@@ -1,13 +1,28 @@
 "use client";
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
-import { Question } from "@/types";
+import { Difficulty, Explanation, QuestionAnswers } from "@/types";
 import { QuestionType } from "@prisma/client";
 
+export interface QuestionToAddType {
+  question: string;
+  explanation?: Explanation;
+  answers: QuestionAnswers;
+  difficulty: Difficulty;
+  type: QuestionType;
+  hint?: string;
+  category: {
+    name: string
+    description?: string
+  };
+  tags: {
+    name: string
+  }[]
+}
 
 interface QuestionContextProps {
-  questionToAdd: Omit<Question, 'id' | 'createdAt' | 'updatedAt' >;
-  setQuestionToAdd: React.Dispatch<React.SetStateAction<Omit<Question, 'id' | 'createdAt' | 'updatedAt' >>>;
+  questionToAdd: QuestionToAddType;
+  setQuestionToAdd: React.Dispatch<React.SetStateAction<QuestionToAddType>>;
 }
 
 const QuestionContext = createContext<QuestionContextProps | undefined>(
@@ -15,18 +30,40 @@ const QuestionContext = createContext<QuestionContextProps | undefined>(
 );
 
 export const QuestionProvider = ({ children }: { children: ReactNode }) => {
-  const [questionToAdd, setQuestionToAdd] = useState<Omit<Question, 'id' | 'createdAt' | 'updatedAt' >>({
+  const [questionToAdd, setQuestionToAdd] = useState<QuestionToAddType>({
     question: "",
-    // explanation: {
-    //   short: "",
-    //   long: "",
-    //   resources: [],
-    // },
+    explanation: {
+      short: "",
+      long: "",
+      resources: [],
+    },
     answers: answersInitialisation("SINGLE_CHOICE"),
     difficulty: "MEDIUM",
     type: "SINGLE_CHOICE",
-    // hint: "",
+    hint: "",
+    category: {
+      name: ""
+    },
+    tags: []
   });
+
+  useEffect(() => {
+    if((questionToAdd.explanation?.short === "" || undefined) && (questionToAdd.explanation?.long === "" || undefined) && (questionToAdd.explanation?.resources?.length === 0)) {
+      setQuestionToAdd(prev => ({
+        ...prev,
+        explanation: undefined
+      }));
+    }
+  }, [questionToAdd.explanation])
+
+  useEffect(() => {
+    if(questionToAdd.hint === "") {
+      setQuestionToAdd(prev => ({
+        ...prev,
+        hint: undefined
+      }));
+    }
+  }, [questionToAdd.hint])
 
   useEffect(() => {
     setQuestionToAdd(prev => ({
