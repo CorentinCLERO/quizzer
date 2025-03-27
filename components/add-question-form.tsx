@@ -6,6 +6,7 @@ import AnswersForm from "./answers-form";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import ExplanationForm from "./explanation-form";
+import { Combobox } from "./combobox";
 
 const questionTypes = [
   { value: "SINGLE_CHOICE", label: "Single choice" },
@@ -40,6 +41,7 @@ function AddQuestionForm() {
           onChange={(e) => changeValue("type", e)}
         />
       </div>
+      <Combobox title="Category" />
       <div>
         Difficulty :
         <MultiSelect
