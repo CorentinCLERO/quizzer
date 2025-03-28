@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
   Command,
-  CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
@@ -19,33 +18,11 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-const frameworks = [
-  {
-    value: "next.js",
-    label: "Next.js",
-  },
-  {
-    value: "sveltekit",
-    label: "SvelteKit",
-  },
-  {
-    value: "nuxt.js",
-    label: "Nuxt.js",
-  },
-  {
-    value: "remix",
-    label: "Remix",
-  },
-  {
-    value: "astro",
-    label: "Astro",
-  },
-]
 
-export function Combobox({title}: {title: string}) {
+
+export function Combobox({title, items, value, onCreate}: {title: string, items: {name: string}[], value: string, onCreate: (item: { name: string; }) => void}) {
   const [open, setOpen] = React.useState(false)
   const [selectedValue, setSelectedValue] = React.useState("")
-  const [value, setValue] = React.useState("")
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -57,39 +34,22 @@ export function Combobox({title}: {title: string}) {
           className="w-[230px] justify-between"
         >
           {selectedValue
-            ? frameworks.find((framework) => framework.value === selectedValue)?.label
+            ? items.find((item) => item.name === selectedValue)?.name
             : title}
           <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
         <Command>
-          <CommandInput placeholder="Search framework..." className="h-9" onSelect={(e) => setValue(e.target.value)} />
+          <CommandInput placeholder={title} className="h-9" onSelect={(e) => onCreate({name: (e.target as HTMLInputElement).value})} />
           <CommandList>
             <CommandGroup>
-              {frameworks.map((framework) => (
+              {value && !items.some(item => item.name.toLowerCase() === value.toLowerCase()) && 
                 <CommandItem
-                  key={framework.value}
-                  value={framework.value}
+                  key={value}
+                  value={value}
                   onSelect={(currentValue) => {
-                    setSelectedValue(currentValue === selectedValue ? "" : currentValue)
-                    setOpen(false)
-                  }}
-                >
-                  {framework.label}
-                  <Check
-                    className={cn(
-                      "ml-auto",
-                      selectedValue === framework.value ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                </CommandItem>
-              ))}
-              {value && 
-                <CommandItem
-                  // key={framework.value}
-                  // value={framework.value}
-                  onSelect={(currentValue) => {
+                    onCreate({name: currentValue === selectedValue ? "" : currentValue})
                     setSelectedValue(currentValue === selectedValue ? "" : currentValue)
                     setOpen(false)
                   }}
@@ -97,6 +57,25 @@ export function Combobox({title}: {title: string}) {
                   {value}
                 </CommandItem>
               }
+              {items.map((item) => (
+                <CommandItem
+                  key={item.name}
+                  value={item.name}
+                  onSelect={(currentValue) => {
+                    onCreate({name: currentValue === selectedValue ? "" : currentValue})
+                    setSelectedValue(currentValue === selectedValue ? "" : currentValue)
+                    setOpen(false)
+                  }}
+                >
+                  {item.name}
+                  <Check
+                    className={cn(
+                      "ml-auto",
+                      selectedValue === item.name ? "opacity-100" : "opacity-0"
+                    )}
+                  />
+                </CommandItem>
+              ))}
             </CommandGroup>
           </CommandList>
         </Command>

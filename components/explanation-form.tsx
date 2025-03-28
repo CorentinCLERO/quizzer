@@ -58,10 +58,12 @@ export default function ExplanationForm() {
         type="text"
         placeholder="Short explanation"
         onChange={(e) => changeValue("short", e.target.value)}
+        value={questionToAdd?.explanation?.short}
       />
       <Textarea
         placeholder="Long explanation"
         onChange={(e) => changeValue("long", e.target.value)}
+        value={questionToAdd?.explanation?.long}
       />
       <div className="flex flex-col gap-2">
         {questionToAdd.explanation?.resources?.map((resource, index) => (

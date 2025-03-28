@@ -1,6 +1,12 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+} from "react";
 import { Difficulty, Explanation, QuestionAnswers } from "@/types";
 import { QuestionType } from "@prisma/client";
 
@@ -12,12 +18,12 @@ export interface QuestionToAddType {
   type: QuestionType;
   hint?: string;
   category: {
-    name: string
-    description?: string
+    name: string;
+    description?: string;
   };
   tags: {
-    name: string
-  }[]
+    name: string;
+  }[];
 }
 
 interface QuestionContextProps {
@@ -42,35 +48,17 @@ export const QuestionProvider = ({ children }: { children: ReactNode }) => {
     type: "SINGLE_CHOICE",
     hint: "",
     category: {
-      name: ""
+      name: "",
     },
-    tags: []
+    tags: [],
   });
 
   useEffect(() => {
-    if((questionToAdd.explanation?.short === "" || undefined) && (questionToAdd.explanation?.long === "" || undefined) && (questionToAdd.explanation?.resources?.length === 0)) {
-      setQuestionToAdd(prev => ({
-        ...prev,
-        explanation: undefined
-      }));
-    }
-  }, [questionToAdd.explanation])
-
-  useEffect(() => {
-    if(questionToAdd.hint === "") {
-      setQuestionToAdd(prev => ({
-        ...prev,
-        hint: undefined
-      }));
-    }
-  }, [questionToAdd.hint])
-
-  useEffect(() => {
-    setQuestionToAdd(prev => ({
+    setQuestionToAdd((prev) => ({
       ...prev,
       answers: answersInitialisation(questionToAdd.type),
     }));
-  }, [questionToAdd.type])
+  }, [questionToAdd.type]);
 
   function answersInitialisation(type: QuestionType) {
     switch (type) {
@@ -120,14 +108,14 @@ export const QuestionProvider = ({ children }: { children: ReactNode }) => {
         ];
       case "TEXT":
         return {
-          correctAnswer: '',
+          correctAnswer: "",
         };
       case "TRUE_FALSE":
         return {
           isTrue: true,
         };
     }
-  };
+  }
 
   return (
     <QuestionContext.Provider value={{ questionToAdd, setQuestionToAdd }}>

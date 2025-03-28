@@ -23,11 +23,36 @@ const difficultyLevels = [
   { value: "HARD", label: "Hard" },
 ];
 
+const frameworks = [
+  {
+    name: "next.js",
+  },
+  {
+    name: "sveltekit",
+  },
+  {
+    name: "nuxt.js",
+  },
+  {
+    name: "remix",
+  },
+  {
+    name: "astro",
+  },
+];
+
 function AddQuestionForm() {
   const { questionToAdd, setQuestionToAdd } = useQuestionContext();
 
   const changeValue = (valueType: string, value: string) => {
     setQuestionToAdd((prev) => ({ ...prev, [valueType]: value }));
+  };
+
+  const addCategorie = (item: { name: string }) => {
+    setQuestionToAdd((prev) => ({
+      ...prev,
+      category: item,
+    }));
   };
 
   return (
@@ -41,7 +66,20 @@ function AddQuestionForm() {
           onChange={(e) => changeValue("type", e)}
         />
       </div>
-      <Combobox title="Category" />
+      <div className="flex flex-col">
+        Category :
+        <Combobox
+          title="Search a category..."
+          value={questionToAdd.category?.name}
+          items={
+            questionToAdd.category?.name?.length > 0 &&
+            !frameworks.some((f) => f.name === questionToAdd.category.name)
+              ? [...frameworks, questionToAdd.category]
+              : frameworks
+          }
+          onCreate={addCategorie}
+        />
+      </div>
       <div>
         Difficulty :
         <MultiSelect
@@ -56,7 +94,7 @@ function AddQuestionForm() {
         onChange={(e) => changeValue("text", e.target.value)}
         value={questionToAdd.question}
       />
-      <AnswersForm/>
+      <AnswersForm />
       <Input
         type="text"
         placeholder="Hint"
@@ -64,7 +102,9 @@ function AddQuestionForm() {
         value={questionToAdd.hint}
       />
       <ExplanationForm />
-      <Button onClick={() => console.log(questionToAdd)}>Create question</Button>
+      <Button onClick={() => console.log(questionToAdd)}>
+        Create question
+      </Button>
     </>
   );
 }
