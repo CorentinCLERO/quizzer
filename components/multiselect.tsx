@@ -18,7 +18,7 @@ interface MultiSelectProps {
 function MultiSelect({ name, values, defaultValue, onChange }: MultiSelectProps) {
   return (
     <Select onValueChange={onChange} defaultValue={defaultValue}>
-      <SelectTrigger className="w-[230px]">
+      <SelectTrigger className="w-full">
         <SelectValue placeholder={name} />
       </SelectTrigger>
       <SelectContent>

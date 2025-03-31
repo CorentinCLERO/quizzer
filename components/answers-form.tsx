@@ -3,7 +3,7 @@ import { useQuestionContext } from "./providers/question-provider";
 import { Input } from "./ui/input";
 import { Switch } from "./ui/switch";
 import { Button } from "./ui/button";
-import { Trash2, ArrowUp, ArrowDown } from "lucide-react"; // Import ArrowUp and ArrowDown
+import { Trash2, ArrowUp, ArrowDown } from "lucide-react";
 
 export default function AnswersForm() {
   const { questionToAdd, setQuestionToAdd } = useQuestionContext();

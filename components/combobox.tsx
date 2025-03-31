@@ -31,7 +31,7 @@ export function Combobox({title, items, value, onCreate}: {title: string, items:
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[230px] justify-between"
+          className="justify-between"
         >
           {selectedValue
             ? items.find((item) => item.name === selectedValue)?.name
@@ -39,7 +39,7 @@ export function Combobox({title, items, value, onCreate}: {title: string, items:
           <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
+      <PopoverContent className="p-0">
         <Command>
           <CommandInput placeholder={title} className="h-9" onSelect={(e) => onCreate({name: (e.target as HTMLInputElement).value})} />
           <CommandList>
