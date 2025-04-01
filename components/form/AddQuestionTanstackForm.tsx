@@ -19,6 +19,7 @@ import { AnswersSchema } from "./zodSchema";
 import { Trash2 } from "lucide-react";
 import { Input } from "../ui/input";
 import { Switch } from "../ui/switch";
+import { MultiCombobox } from "../multiCombobox";
 
 const frameworks = [
   {
@@ -185,12 +186,9 @@ function AddQuestionTanstackForm() {
                         title="Search a category..."
                         value={field.state.value.name}
                         items={
-                          field.state.value.name?.length > 0 &&
-                          !frameworks.some(
-                            (f) => f.name === field.state.value.name
+                          [...frameworks, field.state.value].filter(
+                            (value, index, array) => array.findIndex(v => v.name === value.name) === index
                           )
-                            ? [...frameworks, field.state.value]
-                            : frameworks
                         }
                         onCreate={(e) => field.handleChange(e)}
                       />
@@ -200,7 +198,29 @@ function AddQuestionTanstackForm() {
                 }}
               />
             </div>
-            <div>Ajouter les tags</div>
+            <div>
+              <form.Field
+                name="tags"
+                children={(field) => {
+                  return (
+                    <div className="flex flex-col">
+                      Tags :
+                      <MultiCombobox
+                        title="Search a tags..."
+                        values={field.state.value}
+                        items={
+                          [...frameworks, ...field.state.value].filter(
+                            (value, index, array) => array.findIndex(v => v.name === value.name) === index
+                          )
+                        }
+                        onCreate={(e) => field.handleChange(e)}
+                      />
+                      <FieldInfo field={field} />
+                    </div>
+                  );
+                }}
+              />
+            </div>
             <div>
               <form.Field
                 name="question"
