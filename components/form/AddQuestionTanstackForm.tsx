@@ -40,7 +40,6 @@ const frameworks = [
 ];
 
 function FieldInfo({ field }: { field: AnyFieldApi }) {
-  // console.log(field.name, field)
   // Helper pour extraire les messages d'erreur
   const getErrorMessages = (errors: unknown[]): string[] => {
     return errors.map((error) => {
@@ -187,7 +186,7 @@ function AddQuestionTanstackForm() {
                         value={field.state.value.name}
                         items={
                           [...frameworks, field.state.value].filter(
-                            (value, index, array) => array.findIndex(v => v.name === value.name) === index
+                            (value, index, array) => value.name.length > 0 && array.findIndex(v => v.name === value.name) === index
                           )
                         }
                         onCreate={(e) => field.handleChange(e)}
@@ -264,7 +263,6 @@ function AddQuestionTanstackForm() {
               <form.Field
                 name="answers"
                 children={(field) => {
-                  console.log(field.form.getFieldValue("type"));
                   if (field.form.getFieldValue("type") === "SINGLE_CHOICE")
                     return (
                       <>

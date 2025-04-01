@@ -1,17 +1,16 @@
-'use client';
+"use client";
 
-import { QuestionProvider } from '@/components/providers/question-provider';
-import AddQuestionForm from '@/components/add-question-form';
-import React from 'react';
+import React from "react";
+import AddQuestionTanstackForm from "@/components/form/AddQuestionTanstackForm";
 
 function AddQuestionPage() {
   return (
-    <QuestionProvider>
-      <div className='flex flex-col gap-5 m-5'>
-        <h1 className='flex justify-center text-2xl font-bold'>Add a question</h1>
-        <AddQuestionForm />
-      </div>
-    </QuestionProvider>
+    <div className="flex flex-col gap-5 m-5">
+      <h1 className="flex justify-center text-2xl font-bold">
+        Add a question 2
+      </h1>
+      <AddQuestionTanstackForm />
+    </div>
   );
 }
 
