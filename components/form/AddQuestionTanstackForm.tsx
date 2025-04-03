@@ -40,6 +40,7 @@ const frameworks = [
 ];
 
 function FieldInfo({ field }: { field: AnyFieldApi }) {
+  console.log("errors", field.name, field);
   // Helper pour extraire les messages d'erreur
   const getErrorMessages = (errors: unknown[]): string[] => {
     return errors.map((error) => {
@@ -92,12 +93,12 @@ function AddQuestionTanstackForm() {
         explanation: z.object({
           short: z
             .string()
-            .min(10, { message: "Must be 10 or more characters long" })
+            .min(10, {
+              message:
+                "Must be a short explanation of 10 or more characters long",
+            })
             .max(100, { message: "Must be 100 or fewer characters long" }),
-          long: z
-            .string()
-            .min(10, { message: "Must be 10 or more characters long" })
-            .max(500, { message: "Must be 500 or fewer characters long" }),
+          long: z.string(),
           resources: z.array(
             z
               .string()
@@ -115,17 +116,21 @@ function AddQuestionTanstackForm() {
           "MATCHING",
           "ORDERING",
         ]),
-        hint: z
-          .string()
-          .min(10, { message: "Must be 10 or more characters long" })
-          .max(200, { message: "Must be 200 or fewer characters long" }),
-        category: z.object({
-          name: z
-            .string()
-            .min(2, { message: "Must be 2 or more characters long" })
-            .max(30, { message: "Must be 30 or fewer characters long" }),
-        }),
-        tags: z.array(z.object({ name: z.string() })),
+        hint: z.string(),
+        category: z
+          .object({
+            name: z
+              .string()
+              .min(2, { message: "Must be 2 or more characters long" })
+              .max(30, { message: "Must be 30 or fewer characters long" }),
+          })
+          .refine((value) => value.name.trim().length > 0, {
+            message: "Category must not be empty",
+          }),
+        tags: z
+          .array(z.object({ name: z.string() }))
+          .min(1, { message: "Must have at leat 1 tag" })
+          .max(5, { message: "Must have 5 tags max" }),
       }),
     },
     onSubmit: async ({ value }) => {
@@ -184,11 +189,12 @@ function AddQuestionTanstackForm() {
                       <Combobox
                         title="Search a category..."
                         value={field.state.value.name}
-                        items={
-                          [...frameworks, field.state.value].filter(
-                            (value, index, array) => value.name.length > 0 && array.findIndex(v => v.name === value.name) === index
-                          )
-                        }
+                        items={[...frameworks, field.state.value].filter(
+                          (value, index, array) =>
+                            value.name.length > 0 &&
+                            array.findIndex((v) => v.name === value.name) ===
+                              index
+                        )}
                         onCreate={(e) => field.handleChange(e)}
                       />
                       <FieldInfo field={field} />
@@ -207,11 +213,11 @@ function AddQuestionTanstackForm() {
                       <MultiCombobox
                         title="Search a tags..."
                         values={field.state.value}
-                        items={
-                          [...frameworks, ...field.state.value].filter(
-                            (value, index, array) => array.findIndex(v => v.name === value.name) === index
-                          )
-                        }
+                        items={[...frameworks, ...field.state.value].filter(
+                          (value, index, array) =>
+                            array.findIndex((v) => v.name === value.name) ===
+                            index
+                        )}
                         onCreate={(e) => field.handleChange(e)}
                       />
                       <FieldInfo field={field} />
@@ -294,14 +300,19 @@ function AddQuestionTanstackForm() {
                                 <form.Field name={`answers[${i}].text`}>
                                   {(subField) => {
                                     return (
-                                      <Input
-                                        type="text"
-                                        placeholder={`Answer ${i + 1}`}
-                                        onChange={(e) => {
-                                          subField.handleChange(e.target.value);
-                                        }}
-                                        value={subField.state.value}
-                                      />
+                                      <div className="flex flex-col">
+                                        <Input
+                                          type="text"
+                                          placeholder={`Answer ${i + 1}`}
+                                          onChange={(e) => {
+                                            subField.handleChange(
+                                              e.target.value
+                                            );
+                                          }}
+                                          value={subField.state.value}
+                                        />
+                                        <FieldInfo field={subField} />
+                                      </div>
                                     );
                                   }}
                                 </form.Field>
@@ -376,14 +387,19 @@ function AddQuestionTanstackForm() {
                                 <form.Field name={`answers[${i}].text`}>
                                   {(subField) => {
                                     return (
-                                      <Input
-                                        type="text"
-                                        placeholder={`Answer ${i + 1}`}
-                                        onChange={(e) => {
-                                          subField.handleChange(e.target.value);
-                                        }}
-                                        value={subField.state.value}
-                                      />
+                                      <div className="flex flex-col">
+                                        <Input
+                                          type="text"
+                                          placeholder={`Answer ${i + 1}`}
+                                          onChange={(e) => {
+                                            subField.handleChange(
+                                              e.target.value
+                                            );
+                                          }}
+                                          value={subField.state.value}
+                                        />
+                                        <FieldInfo field={subField} />
+                                      </div>
                                     );
                                   }}
                                 </form.Field>
@@ -439,14 +455,17 @@ function AddQuestionTanstackForm() {
                       <div className="flex flex-col gap-2">
                         <form.Field name="answers.correctAnswer">
                           {(subField) => (
-                            <Input
-                              type="text"
-                              placeholder="Correct Answer"
-                              value={subField.state.value as string}
-                              onChange={(e) =>
-                                subField.handleChange(e.target.value)
-                              }
-                            />
+                            <div className="flex flex-col">
+                              <Input
+                                type="text"
+                                placeholder="Correct Answer"
+                                value={subField.state.value as string}
+                                onChange={(e) =>
+                                  subField.handleChange(e.target.value)
+                                }
+                              />
+                              <FieldInfo field={subField} />
+                            </div>
                           )}
                         </form.Field>
                       </div>
@@ -476,30 +495,42 @@ function AddQuestionTanstackForm() {
                                 <div className="flex items-center justify-between gap-2">
                                   <form.Field name={`answers[${i}].left`}>
                                     {(subField) => (
-                                      <Input
-                                        type="text"
-                                        placeholder={`Left ${i + 1}`}
-                                        onChange={(e) => {
-                                          subField.handleChange(e.target.value);
-                                        }}
-                                        value={
-                                          (subField.state.value as string) ?? ""
-                                        }
-                                      />
+                                      <>
+                                        <Input
+                                          type="text"
+                                          placeholder={`Left ${i + 1}`}
+                                          onChange={(e) => {
+                                            subField.handleChange(
+                                              e.target.value
+                                            );
+                                          }}
+                                          value={
+                                            (subField.state.value as string) ??
+                                            ""
+                                          }
+                                        />
+                                        <FieldInfo field={subField} />
+                                      </>
                                     )}
                                   </form.Field>
                                   <form.Field name={`answers[${i}].right`}>
                                     {(subField) => (
-                                      <Input
-                                        type="text"
-                                        placeholder={`Right ${i + 1}`}
-                                        onChange={(e) => {
-                                          subField.handleChange(e.target.value);
-                                        }}
-                                        value={
-                                          (subField.state.value as string) ?? ""
-                                        }
-                                      />
+                                      <div className="flex flex-col">
+                                        <Input
+                                          type="text"
+                                          placeholder={`Right ${i + 1}`}
+                                          onChange={(e) => {
+                                            subField.handleChange(
+                                              e.target.value
+                                            );
+                                          }}
+                                          value={
+                                            (subField.state.value as string) ??
+                                            ""
+                                          }
+                                        />
+                                        <FieldInfo field={subField} />
+                                      </div>
                                     )}
                                   </form.Field>
                                 </div>
@@ -550,14 +581,17 @@ function AddQuestionTanstackForm() {
                                 </Button>
                                 <form.Field name={`answers[${i}].text`}>
                                   {(subField) => (
-                                    <Input
-                                      type="text"
-                                      placeholder={`Step ${i + 1}`}
-                                      onChange={(e) =>
-                                        subField.handleChange(e.target.value)
-                                      }
-                                      value={subField.state.value as string}
-                                    />
+                                    <div className="flex flex-col">
+                                      <Input
+                                        type="text"
+                                        placeholder={`Step ${i + 1}`}
+                                        onChange={(e) =>
+                                          subField.handleChange(e.target.value)
+                                        }
+                                        value={subField.state.value as string}
+                                      />
+                                      <FieldInfo field={subField} />
+                                    </div>
                                   )}
                                 </form.Field>
                                 <div className="flex gap-1">
@@ -671,7 +705,6 @@ function AddQuestionTanstackForm() {
                           field.handleChange(e.target.value);
                         }}
                       />
-                      <FieldInfo field={field} />
                     </div>
                   );
                 }}
@@ -690,7 +723,7 @@ function AddQuestionTanstackForm() {
                             <>
                               <Input
                                 type="text"
-                                placeholder="Add a short answer..."
+                                placeholder="Add a short explanation..."
                                 value={subField.state.value}
                                 onChange={(e) => {
                                   subField.handleChange(e.target.value);
@@ -707,13 +740,12 @@ function AddQuestionTanstackForm() {
                           return (
                             <>
                               <Textarea
-                                placeholder="Add a long answer..."
+                                placeholder="Add a long axplanation..."
                                 value={subField.state.value}
                                 onChange={(e) => {
                                   subField.handleChange(e.target.value);
                                 }}
                               />
-                              <FieldInfo field={subField} />
                             </>
                           );
                         }}
@@ -739,6 +771,7 @@ function AddQuestionTanstackForm() {
                                   }
                                   value={subField.state.value}
                                 />
+                                <FieldInfo field={subField} />
                               </div>
                             );
                           }}
