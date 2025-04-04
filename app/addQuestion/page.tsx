@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import AddQuestionTanstackForm from "@/components/form/AddQuestionTanstackForm";
+import AddQuestionTanstackForm from "@/app/components/form/AddQuestionTanstackForm";
 
 function AddQuestionPage() {
   return (
