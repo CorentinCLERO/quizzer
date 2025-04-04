@@ -19,6 +19,7 @@ model User {
   name        String       @unique
   picture     String?
   userAnswers UserAnswer[]
+  questions   Question[]
   role        UserRole     @default(PARTICIPANT)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
@@ -27,7 +28,6 @@ model User {
 model Question {
   id            Int           @id @default(autoincrement())
   text          String
-  explanation   Json?
   /* Exemple de structure explanation:
   {
     "short": "Brève explication de la réponse",
@@ -35,7 +35,7 @@ model Question {
     "resources": ["url1", "url2"] // liens optionnels
   }
   */
-  answers       Json          // Combine responses, matchingPairs, orderingItems
+  explanation   Json?
   /* Exemple de structure answers selon le type:
     Pour MULTIPLE_CHOICE ou SINGLE_CHOICE:
     {
@@ -68,12 +68,15 @@ model Question {
       "allowPartial": true
     }
   */
+  answers       Json          // Combine responses, matchingPairs, orderingItems
   userAnswers   UserAnswer[]
   difficulty    Difficulty
   type          QuestionType
   tags          Tag[]
   categories    Category[]
   hint          String?
+  userId        Int
+  user          User          @relation(fields: [userId], references: [id])
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 }
@@ -99,7 +102,6 @@ model UserAnswer {
   user       User         @relation(fields: [userId], references: [id])
   questionId Int
   question   Question     @relation(fields: [questionId], references: [id])
-  answer     Json
   /* Exemple de structure answer selon le type:
     Pour MULTIPLE_CHOICE:
     {
@@ -124,6 +126,7 @@ model UserAnswer {
       "text": "Réponse fournie par l'utilisateur"
     }
   */
+  answer     Json
   isCorrect  Boolean
   createdAt  DateTime     @default(now())
 }
