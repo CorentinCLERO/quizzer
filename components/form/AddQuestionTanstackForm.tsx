@@ -19,24 +19,7 @@ import { Trash2 } from "lucide-react";
 import { Input } from "../ui/input";
 import { Switch } from "../ui/switch";
 import { MultiCombobox } from "../multiCombobox";
-
-const frameworks = [
-  {
-    name: "next.js",
-  },
-  {
-    name: "sveltekit",
-  },
-  {
-    name: "nuxt.js",
-  },
-  {
-    name: "remix",
-  },
-  {
-    name: "astro",
-  },
-];
+import { Labels } from "@/app/addQuestion/page";
 
 function FieldInfo({ field }: { field: AnyFieldApi }) {
   // Helper pour extraire les messages d'erreur
@@ -64,7 +47,7 @@ function FieldInfo({ field }: { field: AnyFieldApi }) {
   );
 }
 
-function AddQuestionTanstackForm() {
+function AddQuestionTanstackForm({labelsData} : {labelsData: Labels}) {
   const form = useForm({
     defaultValues: {
       question: "",
@@ -79,8 +62,8 @@ function AddQuestionTanstackForm() {
       hint: "",
       category: {
         name: "",
-      },
-      tags: [] as { name: string }[],
+      } as { id?: string; name: string },
+      tags: [] as { id?: string; name: string }[],
     },
     validators: {
       onChange: z.object({
@@ -182,7 +165,7 @@ function AddQuestionTanstackForm() {
                     <Combobox
                       title="Search a category..."
                       value={field.state.value.name}
-                      items={[...frameworks, field.state.value].filter(
+                      items={[...labelsData.categories, field.state.value].filter(
                         (value, index, array) =>
                           value.name.length > 0 &&
                           array.findIndex((v) => v.name === value.name) ===
@@ -204,7 +187,7 @@ function AddQuestionTanstackForm() {
                       <MultiCombobox
                         title="Search a tags..."
                         values={field.state.value}
-                        items={[...frameworks, ...field.state.value].filter(
+                        items={[...labelsData.tags, ...field.state.value].filter(
                           (value, index, array) =>
                             array.findIndex((v) => v.name === value.name) ===
                             index
