@@ -1,4 +1,3 @@
-/* eslint-disable react/no-children-prop */
 import * as React from "react";
 import { useForm } from "@tanstack/react-form";
 import type { AnyFieldApi } from "@tanstack/react-form";
@@ -157,55 +156,48 @@ function AddQuestionTanstackForm() {
         {(state) => (
           <>
             <div>
-              <form.Field
-                name="type"
-                children={(field) => {
-                  return (
-                    <div>
-                      Type :
-                      <MultiSelect
-                        defaultValue={field.state.value}
-                        name="Select the type of question"
-                        values={questionTypes}
-                        onChange={(e) => {
-                          field.handleChange(e);
-                          answersInitialisation(e as QuestionType);
-                        }}
-                      />
-                      <FieldInfo field={field} />
-                    </div>
-                  );
-                }}
-              />
+              <form.Field name="type">
+                {(field) => (
+                  <div>
+                    Type :
+                    <MultiSelect
+                      defaultValue={field.state.value}
+                      name="Select the type of question"
+                      values={questionTypes}
+                      onChange={(e) => {
+                        field.handleChange(e);
+                        answersInitialisation(e as QuestionType);
+                      }}
+                    />
+                    <FieldInfo field={field} />
+                  </div>
+                )}
+              </form.Field>
             </div>
             <div>
-              <form.Field
-                name="category"
-                children={(field) => {
-                  return (
-                    <div className="flex flex-col">
-                      Category :
-                      <Combobox
-                        title="Search a category..."
-                        value={field.state.value.name}
-                        items={[...frameworks, field.state.value].filter(
-                          (value, index, array) =>
-                            value.name.length > 0 &&
-                            array.findIndex((v) => v.name === value.name) ===
-                              index
-                        )}
-                        onCreate={(e) => field.handleChange(e)}
-                      />
-                      <FieldInfo field={field} />
-                    </div>
-                  );
-                }}
-              />
+              <form.Field name="category">
+                {(field) => (
+                  <div className="flex flex-col">
+                    Category :
+                    <Combobox
+                      title="Search a category..."
+                      value={field.state.value.name}
+                      items={[...frameworks, field.state.value].filter(
+                        (value, index, array) =>
+                          value.name.length > 0 &&
+                          array.findIndex((v) => v.name === value.name) ===
+                            index
+                      )}
+                      onCreate={(e) => field.handleChange(e)}
+                    />
+                    <FieldInfo field={field} />
+                  </div>
+                )}
+              </form.Field>
             </div>
             <div>
-              <form.Field
-                name="tags"
-                children={(field) => {
+              <form.Field name="tags">
+                {(field) => {
                   return (
                     <div className="flex flex-col">
                       Tags :
@@ -223,12 +215,11 @@ function AddQuestionTanstackForm() {
                     </div>
                   );
                 }}
-              />
+              </form.Field>
             </div>
             <div>
-              <form.Field
-                name="question"
-                children={(field) => {
+              <form.Field name="question">
+                {(field) => {
                   return (
                     <div>
                       Question :
@@ -241,12 +232,11 @@ function AddQuestionTanstackForm() {
                     </div>
                   );
                 }}
-              />
+              </form.Field>
             </div>
             <div>
-              <form.Field
-                name="difficulty"
-                children={(field) => {
+              <form.Field name="difficulty">
+                {(field) => {
                   return (
                     <div>
                       Difficulty :
@@ -262,12 +252,11 @@ function AddQuestionTanstackForm() {
                     </div>
                   );
                 }}
-              />
+              </form.Field>
             </div>
             <div className="flex flex-col gap-2">
-              <form.Field
-                name="answers"
-                children={(field) => {
+              <form.Field name="answers">
+                {(field) => {
                   if (field.form.getFieldValue("type") === "SINGLE_CHOICE")
                     return (
                       <>
@@ -688,12 +677,11 @@ function AddQuestionTanstackForm() {
                       </>
                     );
                 }}
-              />
+              </form.Field>
             </div>
             <div>
-              <form.Field
-                name="hint"
-                children={(field) => {
+              <form.Field name="hint">
+                {(field) => {
                   return (
                     <div>
                       <Input
@@ -707,17 +695,15 @@ function AddQuestionTanstackForm() {
                     </div>
                   );
                 }}
-              />
+              </form.Field>
             </div>
             <div>
-              <form.Field
-                name="explanation"
-                children={(field) => {
+              <form.Field name="explanation">
+                {(field) => {
                   return (
                     <div className="flex flex-col gap-2">
-                      <form.Field
-                        name="explanation.short"
-                        children={(subField) => {
+                      <form.Field name="explanation.short">
+                        {(subField) => {
                           return (
                             <>
                               <Input
@@ -732,10 +718,9 @@ function AddQuestionTanstackForm() {
                             </>
                           );
                         }}
-                      />
-                      <form.Field
-                        name="explanation.long"
-                        children={(subField) => {
+                      </form.Field>
+                      <form.Field name="explanation.long">
+                        {(subField) => {
                           return (
                             <>
                               <Textarea
@@ -748,12 +733,13 @@ function AddQuestionTanstackForm() {
                             </>
                           );
                         }}
-                      />
+                      </form.Field>
                       {(field.state.value.resources as string[]).map((_, i) => (
                         <form.Field
                           key={i}
                           name={`explanation.resources[${i}]`}
-                          children={(subField) => {
+                        >
+                          {(subField) => {
                             return (
                               <div className="flex gap-2">
                                 <Button
@@ -774,7 +760,7 @@ function AddQuestionTanstackForm() {
                               </div>
                             );
                           }}
-                        />
+                        </form.Field>
                       ))}
                       <Button
                         onClick={() =>
@@ -793,7 +779,7 @@ function AddQuestionTanstackForm() {
                     </div>
                   );
                 }}
-              />
+              </form.Field>
             </div>
             <Button type="submit" disabled={!state.canSubmit}>
               {state.isSubmitting ? "..." : "Create a question"}
