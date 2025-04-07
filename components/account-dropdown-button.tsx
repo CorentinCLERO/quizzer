@@ -14,7 +14,7 @@ import {
 } from "./ui/dropdown-menu";
 import { BadgeCheck, LogIn, LogOut } from "lucide-react";
 import { Session } from "next-auth";
-import { logout } from "../lib/actions/auth";
+import { logout } from "../app/lib/actions/auth";
 
 export default function AccountDropdownButton({
   session,

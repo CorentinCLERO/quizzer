@@ -1,10 +1,23 @@
-// import { withAuth } from "next-auth/middleware"
+import { NextRequest, NextResponse } from "next/server";
+import { auth } from "./auth";
 
-// export default withAuth({
-//   pages: {
-//     signIn: "/login",
-//   },
-// })
-const middlewareConfig = {};
-export default middlewareConfig;
-export const config = { matcher: ["/api/protected/:path*"] }
+const protectedRoutes = [
+  "/api/protected/:path*",
+  "/addQuestion"
+]
+
+export default async function middleware(request: NextRequest) {
+  const session = await auth()
+
+  const { pathname } = request.nextUrl
+
+  const isProtected = protectedRoutes.some(route => pathname.startsWith(route))
+
+  console.log(isProtected, !session)
+
+  if (isProtected && !session) {
+    return NextResponse.redirect(new URL("/api/auth/signin", request.url))
+  }
+
+  return NextResponse.next()
+}
