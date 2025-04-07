@@ -40,7 +40,6 @@ const frameworks = [
 ];
 
 function FieldInfo({ field }: { field: AnyFieldApi }) {
-  console.log("errors", field.name, field);
   // Helper pour extraire les messages d'erreur
   const getErrorMessages = (errors: unknown[]): string[] => {
     return errors.map((error) => {

@@ -9,25 +9,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-// import { signIn } from "next-auth/react";
 import { login } from "@/app/lib/actions/auth";
-// import { useUserContext } from "./providers/user-provider";
-// import { useEffect } from "react";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-  // const { user, setUser } = useUserContext();
-  // const handleGoogleLogin = (e: React.MouseEvent<HTMLButtonElement>) => {
-  //   e.preventDefault();
-  //   signIn("google", { callbackUrl: "/" });
-  // };
-
-  // useEffect(() => {
-  //   if (user) window.location.href = "/";
-  // }, [user]);
-
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
