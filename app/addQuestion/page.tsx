@@ -26,6 +26,7 @@ function AddQuestionPage() {
   const {
     data: labelsData,
     isLoading,
+    isError,
     error,
   } = useQuery({
     queryKey: ["labels"],
@@ -33,8 +34,8 @@ function AddQuestionPage() {
   });
 
   useEffect(() => {
-    if (error) toast.warning(error.message);
-  }, [error]);
+    if (isError) toast.warning(error.message);
+  }, [isError, error]);
 
   return (
     <div className="flex flex-col gap-5 m-5">

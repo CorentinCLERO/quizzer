@@ -7,8 +7,11 @@ import { difficultyLevels, questionTypes } from "./constants";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import {
+  Difficulty,
   MatchingAnswers,
   MultipleChoiceAnswers,
+  // QuestionAnswers,
+  QuestionFormValues,
   QuestionType,
   SingleChoiceAnswers,
 } from "@/types";
@@ -20,6 +23,8 @@ import { Input } from "../ui/input";
 import { Switch } from "../ui/switch";
 import { MultiCombobox } from "../multiCombobox";
 import { Labels } from "@/app/addQuestion/page";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 function FieldInfo({ field }: { field: AnyFieldApi }) {
   // Helper pour extraire les messages d'erreur
@@ -47,27 +52,82 @@ function FieldInfo({ field }: { field: AnyFieldApi }) {
   );
 }
 
+async function postQuestion(data: QuestionFormValues) {
+  const response = await fetch("/api/questions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    toast.warning("Failed to create question");
+    throw new Error("Failed to create question");
+  }
+
+  toast.success("Question created");
+  return response.json();
+}
+
 function AddQuestionTanstackForm({ labelsData }: { labelsData: Labels }) {
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: async (data: QuestionFormValues) => postQuestion(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["labels"] });
+    },
+  });
+
   const form = useForm({
     defaultValues: {
-      question: "",
+      text: "",
       explanation: {
         short: "",
         long: "",
         resources: [] as string[],
       },
       answers: answersInitialisation("SINGLE_CHOICE"),
-      difficulty: "MEDIUM",
-      type: "SINGLE_CHOICE",
+      difficulty: "MEDIUM" as Difficulty,
+      type: "SINGLE_CHOICE" as QuestionType,
       hint: "",
       category: {
         name: "",
       } as { id?: string; name: string },
       tags: [] as { id?: string; name: string }[],
     },
+    // defaultValues: {
+    //   text: "test question",
+    //   explanation: {
+    //     short: "test short exp",
+    //     long: "test long exp",
+    //     resources: ["test resource"] as string[],
+    //   },
+    //   answers: [
+    //     {
+    //       text: "good answer",
+    //       isCorrect: true,
+    //     },
+    //     {
+    //       text: "bad answer",
+    //       isCorrect: false,
+    //     },
+    //   ] as QuestionAnswers,
+    //   difficulty: "MEDIUM" as Difficulty,
+    //   type: "SINGLE_CHOICE" as QuestionType,
+    //   hint: "test hint",
+    //   category: {
+    //     name: "a categorie",
+    //   } as { id?: string; name: string },
+    //   tags: [{ name: "first tag" }, { name: "second tag" }] as {
+    //     id?: string;
+    //     name: string;
+    //   }[],
+    // },
     validators: {
       onChange: z.object({
-        question: z
+        text: z
           .string()
           .min(10, { message: "Must be 10 or more characters long" })
           .max(500, { message: "Must be 500 or fewer characters long" }),
@@ -112,7 +172,8 @@ function AddQuestionTanstackForm({ labelsData }: { labelsData: Labels }) {
     },
     onSubmit: async ({ value }) => {
       // Do something with form data
-      console.log(value);
+      await mutation.mutateAsync(value);
+      console.log("Question created successfully:", value);
     },
   });
 
@@ -144,7 +205,7 @@ function AddQuestionTanstackForm({ labelsData }: { labelsData: Labels }) {
                       name="Select the type of question"
                       values={questionTypes}
                       onChange={(e) => {
-                        field.handleChange(e);
+                        field.handleChange(e as QuestionType);
                         answersInitialisation(e as QuestionType);
                       }}
                     />
@@ -203,7 +264,7 @@ function AddQuestionTanstackForm({ labelsData }: { labelsData: Labels }) {
               </form.Field>
             </div>
             <div>
-              <form.Field name="question">
+              <form.Field name="text">
                 {(field) => {
                   return (
                     <div>
@@ -230,7 +291,7 @@ function AddQuestionTanstackForm({ labelsData }: { labelsData: Labels }) {
                         name="Select the difficulty of question"
                         values={difficultyLevels}
                         onChange={(e) => {
-                          field.handleChange(e);
+                          field.handleChange(e as Difficulty);
                         }}
                       />
                       <FieldInfo field={field} />

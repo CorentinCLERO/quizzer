@@ -50,65 +50,64 @@ model VerificationToken {
   @@id([identifier, token])
 }
 
-
 model Question {
-  id            String           @id @default(cuid())
-  text          String
-  /* Exemple de structure explanation:
-  {
-    "short": "Brève explication de la réponse",
-    "long": "Explication détaillée avec des exemples...",
-    "resources": ["url1", "url2"] // liens optionnels
-  }
-  */
-  explanation   Json?
-  /* Exemple de structure answers selon le type:
-    Pour MULTIPLE_CHOICE ou SINGLE_CHOICE:
-    {
-      "options": [
-        { "text": "Réponse 1", "isCorrect": true },
-        { "text": "Réponse 2", "isCorrect": false }
-      ]
-    }
-
-    Pour MATCHING:
-    {
-      "pairs": [
-        { "left": "Paris", "right": "France" },
-        { "left": "Berlin", "right": "Allemagne" }
-      ]
-    }
-
-    Pour ORDERING:
-    {
-      "items": [
-        { "text": "Première étape", "correctIndex": 0 },
-        { "text": "Deuxième étape", "correctIndex": 1 }
-      ]
-    }
-
-    Pour TEXT:
-    {
-      "correctAnswers": ["réponse1", "réponse2"],
-      "caseSensitive": false,
-      "allowPartial": true
-    }
-  */
-  answers       Json          // Combine responses, matchingPairs, orderingItems
-  userAnswers   UserAnswer[]
-  difficulty    Difficulty
-  type          QuestionType
-  tags          Tag[]
-  categories    Category[]
-  hint          String?
-  userId        String
-  user          User          @relation(fields: [userId], references: [id])
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id          String       @id @default(cuid())
+  text        String
+  /**
+   * Exemple de structure explanation:
+   * {
+   * "short": "Brève explication de la réponse",
+   * "long": "Explication détaillée avec des exemples...",
+   * "resources": ["url1", "url2"] // liens optionnels
+   * }
+   */
+  explanation Json?
+  /**
+   * Exemple de structure answers selon le type:
+   * Pour MULTIPLE_CHOICE ou SINGLE_CHOICE:
+   * {
+   * "options": [
+   * { "text": "Réponse 1", "isCorrect": true },
+   * { "text": "Réponse 2", "isCorrect": false }
+   * ]
+   * }
+   * Pour MATCHING:
+   * {
+   * "pairs": [
+   * { "left": "Paris", "right": "France" },
+   * { "left": "Berlin", "right": "Allemagne" }
+   * ]
+   * }
+   * Pour ORDERING:
+   * {
+   * "items": [
+   * { "text": "Première étape", "correctIndex": 0 },
+   * { "text": "Deuxième étape", "correctIndex": 1 }
+   * ]
+   * }
+   * Pour TEXT:
+   * {
+   * "correctAnswers": ["réponse1", "réponse2"],
+   * "caseSensitive": false,
+   * "allowPartial": true
+   * }
+   */
+  answers     Json // Combine responses, matchingPairs, orderingItems
+  userAnswers UserAnswer[]
+  difficulty  Difficulty
+  type        QuestionType
+  tags        Tag[]
+  categoryId  String
+  category    Category     @relation(fields: [categoryId], references: [id])
+  hint        String?
+  userId      String
+  user        User         @relation(fields: [userId], references: [id])
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 }
 
 model Category {
-  id          String        @id @default(cuid())
+  id          String     @id @default(cuid())
   name        String     @unique
   description String?
   questions   Question[]
@@ -116,45 +115,43 @@ model Category {
 }
 
 model Tag {
-  id          String        @id @default(cuid())
-  name        String     @unique
-  questions   Question[]
-  createdAt   DateTime   @default(now())
+  id        String     @id @default(cuid())
+  name      String     @unique
+  questions Question[]
+  createdAt DateTime   @default(now())
 }
 
 model UserAnswer {
-  id         String          @id @default(cuid())
+  id         String   @id @default(cuid())
   userId     String
-  user       User         @relation(fields: [userId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
   questionId String
-  question   Question     @relation(fields: [questionId], references: [id])
-  /* Exemple de structure answer selon le type:
-    Pour MULTIPLE_CHOICE:
-    {
-      "selectedOptions": [1, 3]  // IDs des options sélectionnées
-    }
-
-    Pour MATCHING:
-    {
-      "matches": [
-        { "leftId": 1, "rightId": 3 },
-        { "leftId": 2, "rightId": 1 }
-      ]
-    }
-
-    Pour ORDERING:
-    {
-      "order": [3, 1, 2, 4]  // IDs dans l'ordre choisi
-    }
-
-    Pour TEXT:
-    {
-      "text": "Réponse fournie par l'utilisateur"
-    }
-  */
+  question   Question @relation(fields: [questionId], references: [id])
+  /**
+   * Exemple de structure answer selon le type:
+   * Pour MULTIPLE_CHOICE:
+   * {
+   * "selectedOptions": [1, 3]  // IDs des options sélectionnées
+   * }
+   * Pour MATCHING:
+   * {
+   * "matches": [
+   * { "leftId": 1, "rightId": 3 },
+   * { "leftId": 2, "rightId": 1 }
+   * ]
+   * }
+   * Pour ORDERING:
+   * {
+   * "order": [3, 1, 2, 4]  // IDs dans l'ordre choisi
+   * }
+   * Pour TEXT:
+   * {
+   * "text": "Réponse fournie par l'utilisateur"
+   * }
+   */
   answer     Json
   isCorrect  Boolean
-  createdAt  DateTime     @default(now())
+  createdAt  DateTime @default(now())
 }
 
 enum Difficulty {

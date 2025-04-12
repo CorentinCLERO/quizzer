@@ -64,14 +64,35 @@ export interface Question {
 }
 
 export interface Category {
-  id: number
-  name: string
-  description?: string
-  createdAt: Date
+  id: number;
+  name: string;
+  description?: string;
+  createdAt: Date;
 }
 
 export interface Tag {
-  id: number
-  name: string
-  createdAt: Date
+  id: number;
+  name: string;
+  createdAt: Date;
+}
+
+export interface QuestionFormValues {
+  text: string;
+  explanation: {
+    short: string;
+    long: string;
+    resources: string[];
+  };
+  answers: QuestionAnswers;
+  difficulty: Difficulty;
+  type: QuestionType;
+  hint: string;
+  category: {
+    id?: string;
+    name: string;
+  };
+  tags: Array<{
+    id?: string;
+    name: string;
+  }>;
 }
