@@ -41,9 +41,7 @@ export function Combobox({
           aria-expanded={open}
           className="justify-between"
         >
-          {value
-            ? value
-            : title}
+          {value ? value : title}
           <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -61,13 +59,14 @@ export function Combobox({
           />
           <CommandList>
             <CommandGroup>
-              {value &&
+              {selectedValue &&
                 !items.some(
-                  (item) => item.name.toLowerCase() === value.toLowerCase()
+                  (item) =>
+                    item.name.toLowerCase() === selectedValue.toLowerCase()
                 ) && (
                   <CommandItem
-                    key={value}
-                    value={value}
+                    key={selectedValue}
+                    value={selectedValue}
                     onSelect={(currentValue) => {
                       onCreate({
                         name:
@@ -79,7 +78,7 @@ export function Combobox({
                       setOpen(false);
                     }}
                   >
-                    {value}
+                    {selectedValue}
                   </CommandItem>
                 )}
               {items.map((item) => (

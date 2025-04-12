@@ -10,7 +10,6 @@ import {
   Difficulty,
   MatchingAnswers,
   MultipleChoiceAnswers,
-  // QuestionAnswers,
   QuestionFormValues,
   QuestionType,
   SingleChoiceAnswers,
@@ -27,7 +26,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 function FieldInfo({ field }: { field: AnyFieldApi }) {
-  // Helper pour extraire les messages d'erreur
   const getErrorMessages = (errors: unknown[]): string[] => {
     return errors.map((error) => {
       if (typeof error === "string") return error;
@@ -97,34 +95,6 @@ function AddQuestionTanstackForm({ labelsData }: { labelsData: Labels }) {
       } as { id?: string; name: string },
       tags: [] as { id?: string; name: string }[],
     },
-    // defaultValues: {
-    //   text: "test question",
-    //   explanation: {
-    //     short: "test short exp",
-    //     long: "test long exp",
-    //     resources: ["test resource"] as string[],
-    //   },
-    //   answers: [
-    //     {
-    //       text: "good answer",
-    //       isCorrect: true,
-    //     },
-    //     {
-    //       text: "bad answer",
-    //       isCorrect: false,
-    //     },
-    //   ] as QuestionAnswers,
-    //   difficulty: "MEDIUM" as Difficulty,
-    //   type: "SINGLE_CHOICE" as QuestionType,
-    //   hint: "test hint",
-    //   category: {
-    //     name: "a categorie",
-    //   } as { id?: string; name: string },
-    //   tags: [{ name: "first tag" }, { name: "second tag" }] as {
-    //     id?: string;
-    //     name: string;
-    //   }[],
-    // },
     validators: {
       onChange: z.object({
         text: z
@@ -171,9 +141,7 @@ function AddQuestionTanstackForm({ labelsData }: { labelsData: Labels }) {
       }),
     },
     onSubmit: async ({ value }) => {
-      // Do something with form data
       await mutation.mutateAsync(value);
-      console.log("Question created successfully:", value);
     },
   });
 
