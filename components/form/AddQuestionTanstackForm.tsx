@@ -47,7 +47,7 @@ function FieldInfo({ field }: { field: AnyFieldApi }) {
   );
 }
 
-function AddQuestionTanstackForm({labelsData} : {labelsData: Labels}) {
+function AddQuestionTanstackForm({ labelsData }: { labelsData: Labels }) {
   const form = useForm({
     defaultValues: {
       question: "",
@@ -74,10 +74,6 @@ function AddQuestionTanstackForm({labelsData} : {labelsData: Labels}) {
         explanation: z.object({
           short: z
             .string()
-            .min(10, {
-              message:
-                "Must be a short explanation of 10 or more characters long",
-            })
             .max(100, { message: "Must be 100 or fewer characters long" }),
           long: z.string(),
           resources: z.array(
@@ -165,7 +161,10 @@ function AddQuestionTanstackForm({labelsData} : {labelsData: Labels}) {
                     <Combobox
                       title="Search a category..."
                       value={field.state.value.name}
-                      items={[...labelsData.categories, field.state.value].filter(
+                      items={[
+                        ...labelsData?.categories,
+                        field.state.value,
+                      ].filter(
                         (value, index, array) =>
                           value.name.length > 0 &&
                           array.findIndex((v) => v.name === value.name) ===
@@ -187,7 +186,10 @@ function AddQuestionTanstackForm({labelsData} : {labelsData: Labels}) {
                       <MultiCombobox
                         title="Search a tags..."
                         values={field.state.value}
-                        items={[...labelsData.tags, ...field.state.value].filter(
+                        items={[
+                          ...labelsData?.tags,
+                          ...field.state.value,
+                        ].filter(
                           (value, index, array) =>
                             array.findIndex((v) => v.name === value.name) ===
                             index
