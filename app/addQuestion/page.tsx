@@ -1,9 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import AddQuestionTanstackForm from "@/components/form/AddQuestionTanstackForm";
 import { useQuery } from "@tanstack/react-query";
 import Loader from "@/components/loader/loader";
+import { toast } from "sonner";
 
 export type Labels = {
   categories: {
@@ -30,6 +31,10 @@ function AddQuestionPage() {
     queryKey: ["labels"],
     queryFn: fetchLabels,
   });
+
+  useEffect(() => {
+    if (error) toast.warning(error.message);
+  }, [error]);
 
   return (
     <div className="flex flex-col gap-5 m-5">
