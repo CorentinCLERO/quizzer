@@ -69,11 +69,10 @@ export function Combobox({
                     value={selectedValue}
                     onSelect={(currentValue) => {
                       onCreate({
-                        name:
-                          currentValue === selectedValue ? "" : currentValue,
+                        name: currentValue === value ? "" : currentValue,
                       });
                       setSelectedValue(
-                        currentValue === selectedValue ? "" : currentValue
+                        currentValue === value ? "" : currentValue
                       );
                       setOpen(false);
                     }}
