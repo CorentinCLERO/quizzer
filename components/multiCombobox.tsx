@@ -27,11 +27,13 @@ export function MultiCombobox({
   items,
   values,
   onCreate,
+  permitAdd = true,
 }: {
   title: string;
   items: Tag[];
   values: Tag[];
   onCreate: (item: Tag[]) => void;
+  permitAdd?: boolean;
 }) {
   const [open, setOpen] = React.useState(false);
   const [selectedValue, setSelectedValue] = React.useState("");
@@ -52,19 +54,21 @@ export function MultiCombobox({
       </PopoverTrigger>
       <PopoverContent className="p-0">
         <Command>
-          <CommandInput
-            placeholder={title}
-            className="h-9"
-            onSubmit={(e) =>
-              onCreate([
-                ...values,
-                { name: (e.target as HTMLInputElement).value },
-              ])
-            }
-            onSelect={(e) =>
-              setSelectedValue((e.target as HTMLInputElement).value)
-            }
-          />
+          {permitAdd && (
+            <CommandInput
+              placeholder={title}
+              className="h-9"
+              onSubmit={(e) =>
+                onCreate([
+                  ...values,
+                  { name: (e.target as HTMLInputElement).value },
+                ])
+              }
+              onSelect={(e) =>
+                setSelectedValue((e.target as HTMLInputElement).value)
+              }
+            />
+          )}
           <CommandList>
             <CommandGroup>
               {items.map((item) => (
@@ -80,7 +84,7 @@ export function MultiCombobox({
                       );
                     }
                     setOpen(false);
-                    setSelectedValue("")
+                    setSelectedValue("");
                   }}
                 >
                   {item.name}
@@ -94,7 +98,7 @@ export function MultiCombobox({
                   />
                 </CommandItem>
               ))}
-              {selectedValue && (
+              {permitAdd && selectedValue && (
                 <CommandItem
                   key={selectedValue}
                   value={selectedValue}
@@ -107,7 +111,7 @@ export function MultiCombobox({
                       );
                     }
                     setOpen(false);
-                    setSelectedValue("")
+                    setSelectedValue("");
                   }}
                 >
                   {selectedValue}

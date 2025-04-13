@@ -23,11 +23,13 @@ export function Combobox({
   items,
   value,
   onCreate,
+  permitAdd = true,
 }: {
   title: string;
-  items: { name: string }[];
+  items: { id?: string; name: string }[];
   value: string;
-  onCreate: (item: { name: string }) => void;
+  onCreate: (item: { id?: string; name: string }) => void;
+  permitAdd?: boolean;
 }) {
   const [open, setOpen] = React.useState(false);
   const [selectedValue, setSelectedValue] = React.useState("");
@@ -47,19 +49,19 @@ export function Combobox({
       </PopoverTrigger>
       <PopoverContent className="p-0">
         <Command>
-          <CommandInput
-            placeholder={title}
-            className="h-9"
-            onSelect={(e) =>
-              setSelectedValue((e.target as HTMLInputElement).value)
-            }
-            onSubmit={(e) =>
-              onCreate({ name: (e.target as HTMLInputElement).value })
-            }
-          />
+          {permitAdd && (
+            <CommandInput
+              placeholder={title}
+              className="h-9"
+              onSelect={(e) =>
+                setSelectedValue((e.target as HTMLInputElement).value)
+              }
+            />
+          )}
           <CommandList>
             <CommandGroup>
-              {selectedValue &&
+              {permitAdd &&
+                selectedValue &&
                 !items.some(
                   (item) =>
                     item.name.toLowerCase() === selectedValue.toLowerCase()
