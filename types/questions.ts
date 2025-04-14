@@ -60,7 +60,7 @@ export type SingleQuestionAnswer =
   | TrueFalseAnswers;
 
 export interface Question {
-  id: number;
+  id: string;
   text: string;
   explanation?: Explanation;
   answers: QuestionAnswers;
@@ -72,14 +72,14 @@ export interface Question {
 }
 
 export interface Category {
-  id: number;
+  id: string;
   name: string;
   description?: string;
   createdAt: Date;
 }
 
 export interface Tag {
-  id: number;
+  id: string;
   name: string;
   createdAt: Date;
 }
