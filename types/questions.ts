@@ -51,9 +51,17 @@ export type QuestionAnswers =
   | TextAnswers
   | TrueFalseAnswers;
 
+export type SingleQuestionAnswer =
+  | SingleChoiceAnswers
+  | MultipleChoiceAnswers
+  | MatchingAnswers
+  | OrderingAnswers
+  | TextAnswers
+  | TrueFalseAnswers;
+
 export interface Question {
   id: number;
-  question: string;
+  text: string;
   explanation?: Explanation;
   answers: QuestionAnswers;
   difficulty: Difficulty;

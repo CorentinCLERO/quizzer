@@ -2,11 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { QuestionFormValues } from "@/types";
 import { auth } from "@/auth";
-
-export async function GET() {
-  const questions = await prisma.question.findMany();
-  return NextResponse.json(questions);
-}
+import type { Prisma } from "@prisma/client";
 
 export async function POST(req: Request) {
   const body: QuestionFormValues = await req.json();
@@ -18,10 +14,6 @@ export async function POST(req: Request) {
     where: { email: session?.user?.email as string },
     select: { id: true },
   });
-  // console.log("userId", userId);
-  // console.log("tags", tags);
-  // console.log("category", category);
-  // console.log("rest", rest);
 
   try {
     let categoryToConnect;
@@ -45,9 +37,7 @@ export async function POST(req: Request) {
     const tagsToConnect = [];
     for (const tagPointer in tags) {
       const tag = tags[tagPointer];
-      // console.log(tag);
       if (!tag.id) {
-        // console.log("on crée le tag");
         try {
           const newTag = await prisma.tag.create({ data: tag });
           tagsToConnect.push({ id: newTag.id });
@@ -68,7 +58,7 @@ export async function POST(req: Request) {
 
     const question = await prisma.question.create({
       data: {
-        answers: JSON.stringify(answers),
+        answers: answers as unknown as Prisma.InputJsonValue,
         ...rest,
         categoryId: categoryToConnect.id,
         tags: {
