@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Question, SingleQuestionAnswer, SingleChoiceAnswers } from "@/types";
 import { BookOpenText, CircleHelp } from "lucide-react";
+import ExplanationDrawer from "@/components/explanation-drawer";
 
 async function fetchQuestion(
   params: URLSearchParams | null
@@ -62,7 +63,6 @@ export default function QuizStartPage() {
     {} as SingleQuestionAnswer
   );
   const [showHint, setShowHint] = useState(false);
-  const [showExplanation, setShowExplanation] = useState(false);
   const [answersState, setAnswerState] = useState<{
     state: string;
     index: number;
@@ -189,12 +189,8 @@ export default function QuizStartPage() {
                 {showHint && <div>{question.hint}</div>}
               </div>
             )}
-            {answersState && (
-              <div className="flex justify-end">
-                <Button onClick={() => setShowExplanation((prev) => !prev)}>
-                  <BookOpenText /> Learn More
-                </Button>
-              </div>
+            {answersState && question?.explanation && (
+              <ExplanationDrawer explanation={question.explanation} />
             )}
           </div>
         </div>
