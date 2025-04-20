@@ -122,16 +122,27 @@ model Tag {
 }
 
 model UserAnswer {
-  id         String   @id @default(cuid())
+  id         String       @id @default(cuid())
   userId     String
-  user       User     @relation(fields: [userId], references: [id])
+  user       User         @relation(fields: [userId], references: [id])
   questionId String
-  question   Question @relation(fields: [questionId], references: [id])
+  question   Question     @relation(fields: [questionId], references: [id])
   /**
    * Exemple de structure answer selon le type:
+   * Pour SINGLE_CHOICE:
+   * {
+   * "text": "answer"
+   * }
    * Pour MULTIPLE_CHOICE:
    * {
-   * "selectedOptions": [1, 3]  // IDs des options sélectionnées
+   * "choices": [
+   * {
+   * "text": "answer1"
+   * },
+   * {
+   * "text": "answer2"
+   * }
+   * ]
    * }
    * Pour MATCHING:
    * {
@@ -152,7 +163,8 @@ model UserAnswer {
   answer     Json
   isCorrect  Boolean
   asUseHint  Boolean
-  createdAt  DateTime @default(now())
+  type       QuestionType
+  createdAt  DateTime     @default(now())
 }
 
 enum Difficulty {

@@ -81,7 +81,6 @@ function ExplanationDrawer({
             </div>
           )}
           <DrawerFooter>
-            <Button>Submit</Button>
             <DrawerClose asChild>
               <Button variant="outline">Cancel</Button>
             </DrawerClose>

@@ -7,9 +7,15 @@ import Loader from "@/components/loader/loader";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Question, SingleQuestionAnswer, SingleChoiceAnswers } from "@/types";
+import {
+  Question,
+  SingleQuestionAnswer,
+  SingleChoiceAnswers,
+  QuestionAnswers,
+} from "@/types";
 import { CircleHelp, Loader2 } from "lucide-react";
 import ExplanationDrawer from "@/components/explanation-drawer";
+import DisplayQuestionAnswers from "@/components/display-question-answers";
 
 async function fetchQuestion(
   params: URLSearchParams | null
@@ -54,17 +60,25 @@ async function fetchQuestionExplanation({
   return response.json();
 }
 
+export type answersStateType = {
+  questionAnswer: QuestionAnswers | undefined;
+  index: number;
+} | null;
+
+export type selectedIndexType = number | number[] | null;
+
 async function postAnswer(
   data: SingleQuestionAnswer,
   id: Question["id"],
-  questionType: Question["type"]
+  questionType: Question["type"],
+  asUseHint: boolean
 ) {
   const response = await fetch(`/api/questions/quiz/${id}/${questionType}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(data),
+    body: JSON.stringify({ body: data, asUseHint }),
   });
 
   if (!response.ok) {
@@ -80,10 +94,8 @@ export default function QuizStartPage() {
   const router = useRouter();
   const [showHint, setShowHint] = useState(false);
   const [showExplanation, setShowExplanation] = useState(false);
-  const [answersState, setAnswerState] = useState<{
-    state: boolean | undefined;
-    index: number;
-  } | null>(null);
+  const [answersState, setAnswerState] = useState<answersStateType>(null);
+  const [selectedIndex, setSelectedIndex] = useState<selectedIndexType>(null);
 
   const queryClient = useQueryClient();
 
@@ -116,7 +128,7 @@ export default function QuizStartPage() {
   const mutation = useMutation({
     mutationFn: async (data: SingleQuestionAnswer) =>
       question
-        ? postAnswer(data, question.id, question.type)
+        ? postAnswer(data, question.id, question.type, !questionHint)
         : Promise.reject("No question available"),
   });
 
@@ -144,11 +156,16 @@ export default function QuizStartPage() {
     );
   }
 
-  const handleAnswer = async (answer: SingleQuestionAnswer, index: number) => {
+  const handleAnswer = async (answer: SingleChoiceAnswers) => {
     if (answersState) return;
-    setAnswerState({ state: undefined, index });
-    const { data } = await mutation.mutateAsync(answer);
-    setAnswerState({ state: data.isCorrect, index });
+    setAnswerState({
+      questionAnswer: undefined,
+      index: selectedIndex as number,
+    });
+    const { data }: { data: QuestionAnswers } = await mutation.mutateAsync(
+      answer
+    );
+    setAnswerState({ questionAnswer: data, index: selectedIndex as number });
   };
 
   const moveToNextQuestion = async () => {
@@ -162,6 +179,7 @@ export default function QuizStartPage() {
       queryKey: ["quizQuestionHint", question?.id],
     });
     setAnswerState(null);
+    setSelectedIndex(null);
   };
 
   return (
@@ -182,31 +200,12 @@ export default function QuizStartPage() {
         </span>
       </div>
       <h2 className="text-xl font-semibold mb-4">{question.text}</h2>
-      <div className="space-y-3">
-        {question.type === "SINGLE_CHOICE" &&
-          (question.answers as SingleChoiceAnswers[]).map(
-            (answer: SingleChoiceAnswers, index: number) => (
-              <Button
-                key={index}
-                variant="outline"
-                className={`w-full text-left justify-start h-auto py-3 px-4 ${
-                  answersState?.index === index
-                    ? answersState?.state === undefined // loading
-                      ? "!bg-gray-500"
-                      : answersState?.state === true
-                      ? "!bg-green-500"
-                      : answersState?.state === false
-                      ? "!bg-red-500"
-                      : ""
-                    : ""
-                }`}
-                onClick={() => handleAnswer(answer, index)}
-              >
-                {answer.text}
-              </Button>
-            )
-          )}
-      </div>
+      <DisplayQuestionAnswers
+        question={question}
+        answersState={answersState}
+        selectedIndex={selectedIndex}
+        setSelectedIndex={setSelectedIndex}
+      />
       {!answersState && (
         <div className="space-y-4">
           <Button
@@ -223,17 +222,33 @@ export default function QuizStartPage() {
             ))}
         </div>
       )}
-      {answersState?.state !== undefined && (
+      {answersState && (
         <ExplanationDrawer
           explanation={questionExplanation}
           setShowExplanation={setShowExplanation}
           loading={explanationIsLoading}
         />
       )}
-      {answersState?.state !== undefined && (
+      {answersState && (
         <div className="pb-6 items-end flex flex-1">
           <Button className="w-full" onClick={moveToNextQuestion}>
             Next Question
+          </Button>
+        </div>
+      )}
+      {!answersState && selectedIndex !== null && (
+        <div className="pb-6 items-end flex flex-1">
+          <Button
+            className="w-full"
+            onClick={() =>
+              handleAnswer(
+                (question.answers as SingleChoiceAnswers[])[
+                  selectedIndex as number
+                ]
+              )
+            }
+          >
+            Validate
           </Button>
         </div>
       )}
