@@ -8,42 +8,56 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { Button } from "./ui/button";
-import useMediaQuery from "./hooks/use-media-query";
 import { Explanation } from "@/types";
-import { BookOpenText } from "lucide-react";
+import { BookOpenText, Loader2 } from "lucide-react";
+import { Dispatch, SetStateAction } from "react";
 
-function ExplanationDrawer({ explanation }: { explanation: Explanation }) {
-  const isDesktop = useMediaQuery("(min-width: 768px)");
-
-  if (isDesktop) {
-    return (
-      <Drawer>
-        <DrawerTrigger asChild>
-          <div className="flex justify-end">
-            <Button>
-              <BookOpenText /> Learn More
-            </Button>
-          </div>
-        </DrawerTrigger>
-        <DrawerContent>
-          <div className="mx-auto w-full max-w-lg">
-            <DrawerHeader>
-              <DrawerTitle>Explanation :</DrawerTitle>
-            </DrawerHeader>
-            <div className="h-92 space-y-4 overflow-y-auto overflow-x-hidden">
-              {explanation.short && (
+function ExplanationDrawer({
+  explanation,
+  setShowExplanation,
+  loading,
+}: {
+  explanation: Explanation | undefined;
+  setShowExplanation: Dispatch<SetStateAction<boolean>>;
+  loading: boolean;
+}) {
+  return (
+    <Drawer>
+      <DrawerTrigger asChild>
+        <div className="flex justify-end">
+          <Button onClick={() => setShowExplanation(true)} variant="secondary">
+            <BookOpenText /> Learn More
+          </Button>
+        </div>
+      </DrawerTrigger>
+      <DrawerContent>
+        <div className="mx-auto w-full p-4 max-w-lg">
+          <DrawerHeader>
+            <DrawerTitle>Explanation :</DrawerTitle>
+          </DrawerHeader>
+          {loading ? (
+            <div className="flex justify-center items-center h-40">
+              <Loader2 className="animate-spin h-10 w-10" />
+            </div>
+          ) : (
+            <div className="max-h-[60dvh] space-y-6 overflow-y-auto overflow-x-hidden">
+              {explanation?.short ? (
                 <div>
                   <h1 className="text-lg font-bold">Short explanation :</h1>
                   <div>{explanation.short}</div>
                 </div>
+              ) : (
+                <div>No short explanation.</div>
               )}
-              {explanation.long && (
+              {explanation?.long ? (
                 <div>
                   <h1 className="text-lg font-bold">Long explanation :</h1>
                   <div>{explanation.long}</div>
                 </div>
+              ) : (
+                <div>No long explanation.</div>
               )}
-              {explanation?.resources && explanation?.resources?.length > 0 && (
+              {explanation?.resources && explanation?.resources?.length > 0 ? (
                 <div className="flex flex-col space-y-2">
                   {explanation.resources.map((resource, index) => (
                     <a
@@ -57,31 +71,17 @@ function ExplanationDrawer({ explanation }: { explanation: Explanation }) {
                     </a>
                   ))}
                 </div>
+              ) : (
+                <div>No resources.</div>
               )}
             </div>
-            <DrawerFooter>
-              <DrawerClose asChild>
-                <Button variant="outline">Cancel</Button>
-              </DrawerClose>
-            </DrawerFooter>
-          </div>
-        </DrawerContent>
-      </Drawer>
-    );
-  }
-
-  return (
-    <Drawer>
-      <DrawerTrigger>Open</DrawerTrigger>
-      <DrawerContent>
-        <DrawerHeader>
-          <DrawerTitle>Explanation :</DrawerTitle>
-        </DrawerHeader>
-        <DrawerFooter>
-          <DrawerClose asChild>
-            <Button variant="outline">Cancel</Button>
-          </DrawerClose>
-        </DrawerFooter>
+          )}
+          <DrawerFooter>
+            <DrawerClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DrawerClose>
+          </DrawerFooter>
+        </div>
       </DrawerContent>
     </Drawer>
   );

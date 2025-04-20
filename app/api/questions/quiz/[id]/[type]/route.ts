@@ -10,7 +10,7 @@ export async function POST(
     const { id, type } = await params;
     const body = await req.json();
 
-    const questionAnswer = await prisma.question.findUnique({
+    const questionAnswer = await prisma.question.findUniqueOrThrow({
       where: { id },
       select: { answers: true },
     });
@@ -34,7 +34,6 @@ export async function POST(
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error processing quiz:", error);
     return NextResponse.json(
       {
         success: false,
