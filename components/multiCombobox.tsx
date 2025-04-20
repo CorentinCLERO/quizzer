@@ -20,6 +20,7 @@ import {
 
 interface Tag {
   name: string;
+  id?: string;
 }
 
 export function MultiCombobox({
@@ -77,7 +78,14 @@ export function MultiCombobox({
                   value={item.name}
                   onSelect={(currentValue) => {
                     if (!values.map((v) => v.name).includes(currentValue)) {
-                      onCreate([...values, { name: currentValue }]);
+                      if (item.id) {
+                        onCreate([
+                          ...values,
+                          { name: currentValue, id: item.id },
+                        ]);
+                      } else {
+                        onCreate([...values, { name: currentValue }]);
+                      }
                     } else {
                       onCreate(
                         values.filter((item) => item.name !== currentValue)

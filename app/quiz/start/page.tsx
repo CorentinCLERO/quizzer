@@ -85,7 +85,7 @@ export default function QuizStartPage() {
     index: number;
   } | null>(null);
 
-  // const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
   const {
     data: question,
@@ -99,7 +99,7 @@ export default function QuizStartPage() {
   });
 
   const { data: questionHint, isLoading: hintIsLoading } = useQuery({
-    queryKey: ["quizQuestionHint"],
+    queryKey: ["quizQuestionHint", question?.id],
     queryFn: () => fetchQuestionHint({ id: question?.id ?? "" }),
     enabled: showHint,
     staleTime: 3_600_000,
@@ -107,7 +107,7 @@ export default function QuizStartPage() {
 
   const { data: questionExplanation, isLoading: explanationIsLoading } =
     useQuery({
-      queryKey: ["quizQuestionExplanation"],
+      queryKey: ["quizQuestionExplanation", question?.id],
       queryFn: () => fetchQuestionExplanation({ id: question?.id ?? "" }),
       enabled: showExplanation,
       staleTime: 3_600_000,
@@ -152,22 +152,16 @@ export default function QuizStartPage() {
   };
 
   const moveToNextQuestion = async () => {
-    await refetch();
-    console.log("questionHint", questionHint);
-    console.log("questionExplanation", questionExplanation);
-    setAnswerState(null);
     setShowExplanation(false);
     setShowHint(false);
-
-    // if (currentQuestion < questions.length - 1) {
-    //   setCurrentQuestion(currentQuestion + 1);
-    // } else {
-    //   setQuizComplete(true);
-    //   // Calculate final score
-    //   // This would need actual logic based on correct answers
-    //   const calculatedScore = Object.keys(answers).length;
-    //   setScore(calculatedScore);
-    // }
+    await refetch();
+    queryClient.removeQueries({
+      queryKey: ["quizQuestionExplanation", question?.id],
+    });
+    queryClient.removeQueries({
+      queryKey: ["quizQuestionHint", question?.id],
+    });
+    setAnswerState(null);
   };
 
   return (
@@ -187,9 +181,7 @@ export default function QuizStartPage() {
             String(question.difficulty).slice(1).toLowerCase()}
         </span>
       </div>
-
       <h2 className="text-xl font-semibold mb-4">{question.text}</h2>
-
       <div className="space-y-3">
         {question.type === "SINGLE_CHOICE" &&
           (question.answers as SingleChoiceAnswers[]).map(

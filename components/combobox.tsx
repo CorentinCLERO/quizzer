@@ -87,9 +87,18 @@ export function Combobox({
                   key={item.name}
                   value={item.name}
                   onSelect={(currentValue) => {
-                    onCreate({
-                      name: currentValue === selectedValue ? "" : currentValue,
-                    });
+                    if (item.id && currentValue !== selectedValue) {
+                      onCreate({
+                        name:
+                          currentValue === selectedValue ? "" : currentValue,
+                        id: item.id,
+                      });
+                    } else {
+                      onCreate({
+                        name:
+                          currentValue === selectedValue ? "" : currentValue,
+                      });
+                    }
                     setSelectedValue(
                       currentValue === selectedValue ? "" : currentValue
                     );

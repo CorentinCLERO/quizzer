@@ -2,6 +2,7 @@ import {
   Drawer,
   DrawerClose,
   DrawerContent,
+  DrawerDescription,
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
@@ -33,7 +34,10 @@ function ExplanationDrawer({
       <DrawerContent>
         <div className="mx-auto w-full p-4 max-w-lg">
           <DrawerHeader>
-            <DrawerTitle>Explanation :</DrawerTitle>
+            <DrawerTitle className="hidden">Explanation :</DrawerTitle>
+            <DrawerDescription className="hidden">
+              Learn More with this explanations :
+            </DrawerDescription>
           </DrawerHeader>
           {loading ? (
             <div className="flex justify-center items-center h-40">
@@ -77,6 +81,7 @@ function ExplanationDrawer({
             </div>
           )}
           <DrawerFooter>
+            <Button>Submit</Button>
             <DrawerClose asChild>
               <Button variant="outline">Cancel</Button>
             </DrawerClose>
