@@ -5,6 +5,7 @@ import Header from "@/components/header";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import QueryProvider from "@/components/providers/tanstack-query-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,6 +41,7 @@ export default function RootLayout({
           <QueryProvider>
             <Header />
             {children}
+            <ReactQueryDevtools initialIsOpen={false} />
           </QueryProvider>
           <Toaster />
         </ThemeProvider>
