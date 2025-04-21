@@ -15,6 +15,8 @@ import {
 import { CircleHelp, Loader2 } from "lucide-react";
 import ExplanationDrawer from "../explanation-drawer";
 
+type MultipleChoiceAnswersWithoutResponse = { text: string };
+
 function MultipleChoiceQuestion({
   question,
   refetch,
@@ -25,10 +27,11 @@ function MultipleChoiceQuestion({
   const [showHint, setShowHint] = useState(false);
   const [showExplanation, setShowExplanation] = useState(false);
   const [answersState, setAnswerState] = useState<{
-    questionAnswer: MultipleChoiceAnswers[] | undefined;
-    index: number[];
+    questionAnswers: MultipleChoiceAnswers[] | undefined;
   } | null>(null);
-  const [selectedIndex, setSelectedIndex] = useState<number[] | null>(null);
+  const [selectedAnswers, setSelectedAnswers] = useState<
+    MultipleChoiceAnswersWithoutResponse[]
+  >([]);
 
   const { data: questionHint, isLoading: hintIsLoading } = useQuery({
     queryKey: ["quizQuestionHint", question?.id],
@@ -52,15 +55,14 @@ function MultipleChoiceQuestion({
         : Promise.reject("No question available"),
   });
 
-  const handleAnswer = async (answer: MultipleChoiceAnswers) => {
+  const handleAnswer = async () => {
+    console.log("answersState : ", answersState);
+    console.log("selectedAnswers : ", selectedAnswers);
     if (answersState) return;
-    setAnswerState({
-      questionAnswer: undefined,
-      index: selectedIndex as number[],
-    });
+    setAnswerState({ questionAnswers: undefined });
     const { data }: { data: MultipleChoiceAnswers[] } =
-      await mutation.mutateAsync(answer);
-    setAnswerState({ questionAnswer: data, index: selectedIndex as number[] });
+      await mutation.mutateAsync(selectedAnswers);
+    setAnswerState({ questionAnswers: data });
   };
 
   const queryClient = useQueryClient();
@@ -76,7 +78,7 @@ function MultipleChoiceQuestion({
       queryKey: ["quizQuestionHint", question?.id],
     });
     setAnswerState(null);
-    setSelectedIndex(null);
+    setSelectedAnswers([]);
   };
 
   return (
@@ -105,31 +107,46 @@ function MultipleChoiceQuestion({
               key={index}
               variant="outline"
               className={`w-full text-left justify-start h-auto py-3 px-4 ${
-                answersState !== null && answersState.index.includes(index)
-                  ? answersState.questionAnswer === undefined // loading
+                answersState !== null &&
+                selectedAnswers
+                  ?.map((questionAnswer) => questionAnswer.text)
+                  .includes(answer.text)
+                  ? answersState.questionAnswers === undefined // loading
                     ? "!bg-gray-500"
                     : (
-                        answersState.questionAnswer as MultipleChoiceAnswers[]
+                        answersState.questionAnswers as MultipleChoiceAnswers[]
                       ).find((answerState) => answerState.text === answer.text)
                         ?.isCorrect === true
                     ? "!bg-green-500"
                     : (
-                        answersState.questionAnswer as MultipleChoiceAnswers[]
+                        answersState.questionAnswers as MultipleChoiceAnswers[]
                       ).find((answerState) => answerState.text === answer.text)
                         ?.isCorrect === false
                     ? "!bg-red-500"
                     : ""
-                  : ""
+                  : `${
+                      answersState?.questionAnswers?.find(
+                        (questionAnswer) => questionAnswer.text === answer.text
+                      )?.isCorrect && "!border-green-500"
+                    }`
               } ${
                 answersState === null &&
-                selectedIndex?.includes(index) &&
+                selectedAnswers &&
+                selectedAnswers
+                  .map((questionAnswer) => questionAnswer.text)
+                  .includes(answer.text) &&
                 "!bg-white text-black"
               }`}
-              onClick={() =>
-                setSelectedIndex((prev) =>
-                  prev === null ? [index] : [...prev, index]
-                )
-              }
+              onClick={() => {
+                if (answersState) return;
+                setSelectedAnswers((prev) => {
+                  if (prev?.find((p) => p.text === answer.text)) {
+                    return prev.filter((p) => p.text !== answer.text);
+                  } else {
+                    return [...prev, answer];
+                  }
+                });
+              }}
             >
               {answer.text}
             </Button>
@@ -166,17 +183,9 @@ function MultipleChoiceQuestion({
           </Button>
         </div>
       )}
-      {!answersState && selectedIndex !== null && (
+      {!answersState && selectedAnswers !== null && (
         <div className="pb-6 items-end flex flex-1">
-          <Button
-            className="w-full"
-            onClick={
-              () => handleAnswer()
-              // (question.answers as MultipleChoiceAnswers[])[
-              //   selectedIndex as number[]
-              // ]
-            }
-          >
+          <Button className="w-full" onClick={() => handleAnswer()}>
             Validate
           </Button>
         </div>
