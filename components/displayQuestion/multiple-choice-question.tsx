@@ -49,15 +49,13 @@ function MultipleChoiceQuestion({
     });
 
   const mutation = useMutation({
-    mutationFn: async (data: MultipleChoiceAnswers) =>
+    mutationFn: async (data: MultipleChoiceAnswersWithoutResponse[]) =>
       question
         ? postAnswer(data, question.id, question.type, !questionHint)
         : Promise.reject("No question available"),
   });
 
   const handleAnswer = async () => {
-    console.log("answersState : ", answersState);
-    console.log("selectedAnswers : ", selectedAnswers);
     if (answersState) return;
     setAnswerState({ questionAnswers: undefined });
     const { data }: { data: MultipleChoiceAnswers[] } =

@@ -1,4 +1,4 @@
-import { Question, SingleQuestionAnswer } from "@/types";
+import { Question } from "@/types";
 import { toast } from "sonner";
 
 export async function fetchQuestion(
@@ -45,7 +45,7 @@ export async function fetchQuestionExplanation({
 }
 
 export async function postAnswer(
-  data: SingleQuestionAnswer,
+  data: QuestionAnswers,
   id: Question["id"],
   questionType: Question["type"],
   asUseHint: boolean
@@ -65,3 +65,38 @@ export async function postAnswer(
 
   return response.json();
 }
+
+interface SingleChoiceAnswers {
+  text: string;
+}
+
+interface MultipleChoiceAnswers {
+  text: string;
+}
+
+interface MatchingAnswers {
+  left: string;
+  right: string;
+}
+
+interface OrderingAnswers {
+  text: string;
+}
+
+interface TextAnswers {
+  correctAnswer: string;
+  caseSensitive?: boolean;
+  allowPartial?: boolean;
+}
+
+interface TrueFalseAnswers {
+  isTrue: boolean;
+}
+
+type QuestionAnswers =
+  | SingleChoiceAnswers
+  | MultipleChoiceAnswers[]
+  | MatchingAnswers[]
+  | OrderingAnswers[]
+  | TextAnswers
+  | TrueFalseAnswers;

@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { SingleChoiceAnswers } from "@/types";
+import { MultipleChoiceAnswers, SingleChoiceAnswers } from "@/types";
 import { QuestionType } from "@prisma/client";
 import { NextResponse } from "next/server";
 
@@ -28,15 +28,25 @@ export async function POST(
     let isCorrect = false;
 
     if (type === "SINGLE_CHOICE") {
-      const foundAnswer = (
-        questionAnswer.answers as unknown as SingleChoiceAnswers[]
-      ).find((answer) => answer.text === body.text) as SingleChoiceAnswers;
-      isCorrect = foundAnswer.isCorrect;
+      const answers =
+        questionAnswer.answers as unknown as SingleChoiceAnswers[];
+      const guestAnswers = body as SingleChoiceAnswers;
+      isCorrect =
+        answers.find((answer) => answer.text === guestAnswers.text)
+          ?.isCorrect ?? false;
     } else if (type === "MULTIPLE_CHOICE") {
-      // const foundAnswer = (
-      //   questionAnswer.answers as unknown as SingleChoiceAnswers[]
-      // ).find((answer) => answer.text === body.text) as SingleChoiceAnswers;
-      isCorrect = false;
+      isCorrect = true;
+      const answers =
+        questionAnswer.answers as unknown as MultipleChoiceAnswers[];
+      const guestAnswers = (body as MultipleChoiceAnswers[]).map(
+        (guestAnswer) => guestAnswer.text
+      );
+      for (let i = 0; i < answers.length; i++) {
+        if (guestAnswers.includes(answers[i].text) && !answers[i].isCorrect)
+          isCorrect = false;
+        if (!guestAnswers.includes(answers[i].text) && answers[i].isCorrect)
+          isCorrect = false;
+      }
     } else if (type === "TRUE_FALSE") {
       isCorrect = false;
     } else if (type === "TEXT") {
