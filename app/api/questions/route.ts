@@ -14,6 +14,7 @@ export async function POST(req: Request) {
     where: { email: session?.user?.email as string },
     select: { id: true },
   });
+  // const userId = "cm97diu6c0000j6ust6xjj6n1"; // Using for postman
 
   try {
     let categoryToConnect;
