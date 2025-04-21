@@ -1,5 +1,6 @@
 import { Question } from "@/types";
 import { toast } from "sonner";
+import { QuizQuestionAnswers } from "./type";
 
 export async function fetchQuestion(
   params: URLSearchParams | null
@@ -45,7 +46,7 @@ export async function fetchQuestionExplanation({
 }
 
 export async function postAnswer(
-  data: QuestionAnswers,
+  data: QuizQuestionAnswers,
   id: Question["id"],
   questionType: Question["type"],
   asUseHint: boolean
@@ -65,38 +66,3 @@ export async function postAnswer(
 
   return response.json();
 }
-
-interface SingleChoiceAnswers {
-  text: string;
-}
-
-interface MultipleChoiceAnswers {
-  text: string;
-}
-
-interface MatchingAnswers {
-  left: string;
-  right: string;
-}
-
-interface OrderingAnswers {
-  text: string;
-}
-
-interface TextAnswers {
-  correctAnswer: string;
-  caseSensitive?: boolean;
-  allowPartial?: boolean;
-}
-
-interface TrueFalseAnswers {
-  isTrue: boolean;
-}
-
-type QuestionAnswers =
-  | SingleChoiceAnswers
-  | MultipleChoiceAnswers[]
-  | MatchingAnswers[]
-  | OrderingAnswers[]
-  | TextAnswers
-  | TrueFalseAnswers;

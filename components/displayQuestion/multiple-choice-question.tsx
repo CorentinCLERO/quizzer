@@ -1,4 +1,4 @@
-import { MultipleChoiceAnswers, Question } from "@/types";
+import { MultipleChoiceAnswers } from "@/types";
 import React, { useState } from "react";
 import { Button } from "../ui/button";
 import {
@@ -14,6 +14,7 @@ import {
 } from "./function";
 import { CircleHelp, Loader2 } from "lucide-react";
 import ExplanationDrawer from "../explanation-drawer";
+import { QuizQuestion } from "./type";
 
 type MultipleChoiceAnswersWithoutResponse = { text: string };
 
@@ -21,8 +22,8 @@ function MultipleChoiceQuestion({
   question,
   refetch,
 }: {
-  question: Question;
-  refetch: () => Promise<QueryObserverResult<Question, Error>>;
+  question: QuizQuestion;
+  refetch: () => Promise<QueryObserverResult<QuizQuestion, Error>>;
 }) {
   const [showHint, setShowHint] = useState(false);
   const [showExplanation, setShowExplanation] = useState(false);
