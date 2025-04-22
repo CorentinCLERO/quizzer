@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(
   req: Request,
-  { params }: { params: { id: string; type: QuestionType } }
+  { params }: { params: Promise<{ id: string; type: QuestionType }> }
 ) {
   try {
     const { id, type } = await params;
