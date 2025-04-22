@@ -14,7 +14,10 @@ export async function POST(
     console.log(body);
 
     const questionAnswer = await prisma.question.findUniqueOrThrow({
-      where: { id },
+      where: {
+        id,
+        OR: [{ type: "SINGLE_CHOICE" }, { type: "MULTIPLE_CHOICE" }],
+      },
       select: { answers: true },
     });
 

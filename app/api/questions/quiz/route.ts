@@ -3,9 +3,12 @@ import { SingleChoiceAnswers } from "@/types";
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  const count = await prisma.question.count();
+  const count = await prisma.question.count({
+    where: { OR: [{ type: "SINGLE_CHOICE" }, { type: "MULTIPLE_CHOICE" }] },
+  });
   const skip = Math.floor(Math.random() * count);
   const questions = await prisma.question.findFirstOrThrow({
+    where: { OR: [{ type: "SINGLE_CHOICE" }, { type: "MULTIPLE_CHOICE" }] },
     skip: skip,
     omit: { explanation: true, hint: true },
   });
