@@ -1,208 +1,176 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
-generator client {
-  provider = "prisma-client-js"
-}
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
+generator client {
+  provider = "prisma-client-js"
+}
+
 model User {
-  id          Int          @id @default(autoincrement())
-  email       String       @unique
-  name        String       @unique
-  quizzes     Quiz[]
+  id            String       @id @default(cuid())
+  email         String       @unique
+  name          String?      @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  userAnswers   UserAnswer[]
+  questions     Question[]
+  role          UserRole     @default(PARTICIPANT)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+model Question {
+  id          String       @id @default(cuid())
+  text        String
+  /**
+   * Exemple de structure explanation:
+   * {
+   * "short": "Brève explication de la réponse",
+   * "long": "Explication détaillée avec des exemples...",
+   * "resources": ["url1", "url2"] // liens optionnels
+   * }
+   */
+  explanation Json?
+  /**
+   * Exemple de structure answers selon le type:
+   * Pour MULTIPLE_CHOICE ou SINGLE_CHOICE:
+   * {
+   * "options": [
+   * { "text": "Réponse 1", "isCorrect": true },
+   * { "text": "Réponse 2", "isCorrect": false }
+   * ]
+   * }
+   * Pour MATCHING:
+   * {
+   * "pairs": [
+   * { "left": "Paris", "right": "France" },
+   * { "left": "Berlin", "right": "Allemagne" }
+   * ]
+   * }
+   * Pour ORDERING:
+   * {
+   * "items": [
+   * { "text": "Première étape", "correctIndex": 0 },
+   * { "text": "Deuxième étape", "correctIndex": 1 }
+   * ]
+   * }
+   * Pour TEXT:
+   * {
+   * "correctAnswers": ["réponse1", "réponse2"],
+   * "caseSensitive": false,
+   * "allowPartial": true
+   * }
+   */
+  answers     Json // Combine responses, matchingPairs, orderingItems
   userAnswers UserAnswer[]
-  userStats   UserStats[]
-  role        UserRole     @default(PARTICIPANT)
+  difficulty  Difficulty
+  type        QuestionType
+  tags        Tag[]
+  categoryId  String
+  category    Category     @relation(fields: [categoryId], references: [id])
+  hint        String?
+  userId      String
+  user        User         @relation(fields: [userId], references: [id])
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 }
 
-model Quiz {
-  id                Int           @id @default(autoincrement())
-  title             String
-  description       String?
-  questions         Question[]
-  userId            Int
-  user              User          @relation(fields: [userId], references: [id])
-  tags              Tag[]
-  categories        Category[]
-  filters           Json?
-  /* Exemple de structure filters:
-  {
-    "selectedDifficulty": ["EASY", "MEDIUM"],
-    "selectedTypes": ["MULTIPLE_CHOICE", "SINGLE_CHOICE"],
-    "numberOfQuestions": 10
-  }
-  */
-  score             Float?
-  status            SessionStatus @default(IN_PROGRESS)
-  startedAt         DateTime      @default(now())
-  finishedAt        DateTime?
-  parentQuizId      Int?
-  parentQuiz        Quiz?         @relation("QuizHistory", fields: [parentQuizId], references: [id])
-  childQuizzes      Quiz[]        @relation("QuizHistory")
-  userAnswers       UserAnswer[]
-  attemptNumber     Int           @default(1)
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt
-}
-
-model Question {
-  id            Int           @id @default(autoincrement())
-  text          String
-  explanation   Json?
-  /* Exemple de structure explanation:
-  {
-    "short": "Brève explication de la réponse",
-    "long": "Explication détaillée avec des exemples...",
-    "resources": ["url1", "url2"] // liens optionnels
-  }
-  */
-  answers       Json          // Combine responses, matchingPairs, orderingItems
-  /* Exemple de structure answers selon le type:
-    Pour MULTIPLE_CHOICE ou SINGLE_CHOICE:
-    {
-      "options": [
-        { "id": 1, "text": "Réponse 1", "isCorrect": true },
-        { "id": 2, "text": "Réponse 2", "isCorrect": false }
-      ]
-    }
-
-    Pour MATCHING:
-    {
-      "pairs": [
-        { "left": "Paris", "right": "France" },
-        { "left": "Berlin", "right": "Allemagne" }
-      ]
-    }
-
-    Pour ORDERING:
-    {
-      "items": [
-        { "text": "Première étape", "correctIndex": 0 },
-        { "text": "Deuxième étape", "correctIndex": 1 }
-      ]
-    }
-
-    Pour TEXT:
-    {
-      "correctAnswers": ["réponse1", "réponse2"],
-      "caseSensitive": false,
-      "allowPartial": true
-    }
-  */
-  quizzes       Quiz[]
-  userAnswers   UserAnswer[]
-  difficulty    Difficulty    @default(MEDIUM)
-  type          QuestionType  @default(SINGLE_CHOICE)
-  tags          Tag[]
-  categories    Category[]
-  hint          String?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-}
-
 model Category {
-  id          Int        @id @default(autoincrement())
+  id          String     @id @default(cuid())
   name        String     @unique
   description String?
   questions   Question[]
-  quizzes     Quiz[]
   createdAt   DateTime   @default(now())
 }
 
 model Tag {
-  id          Int        @id @default(autoincrement())
-  name        String     @unique
-  questions   Question[]
-  userStats   UserStats[]
-  quizzes     Quiz[]
-  createdAt   DateTime   @default(now())
+  id        String     @id @default(cuid())
+  name      String     @unique
+  questions Question[]
+  createdAt DateTime   @default(now())
 }
 
 model UserAnswer {
-  id         Int          @id @default(autoincrement())
-  userId     Int
+  id         String       @id @default(cuid())
+  userId     String
   user       User         @relation(fields: [userId], references: [id])
-  quizId     Int 
-  quiz       Quiz         @relation(fields: [quizId], references: [id])
-  questionId Int
+  questionId String
   question   Question     @relation(fields: [questionId], references: [id])
+  /**
+   * Exemple de structure answer selon le type:
+   * Pour SINGLE_CHOICE:
+   * {
+   * "text": "answer"
+   * }
+   * Pour MULTIPLE_CHOICE:
+   * {
+   * "choices": [
+   * {
+   * "text": "answer1"
+   * },
+   * {
+   * "text": "answer2"
+   * }
+   * ]
+   * }
+   * Pour MATCHING:
+   * {
+   * "matches": [
+   * { "leftId": 1, "rightId": 3 },
+   * { "leftId": 2, "rightId": 1 }
+   * ]
+   * }
+   * Pour ORDERING:
+   * {
+   * "order": [3, 1, 2, 4]  // IDs dans l'ordre choisi
+   * }
+   * Pour TEXT:
+   * {
+   * "text": "Réponse fournie par l'utilisateur"
+   * }
+   */
   answer     Json
-  /* Exemple de structure answer selon le type:
-    Pour MULTIPLE_CHOICE:
-    {
-      "selectedOptions": [1, 3]  // IDs des options sélectionnées
-    }
-
-    Pour MATCHING:
-    {
-      "matches": [
-        { "leftId": 1, "rightId": 3 },
-        { "leftId": 2, "rightId": 1 }
-      ]
-    }
-
-    Pour ORDERING:
-    {
-      "order": [3, 1, 2, 4]  // IDs dans l'ordre choisi
-    }
-
-    Pour TEXT:
-    {
-      "text": "Réponse fournie par l'utilisateur"
-    }
-  */
   isCorrect  Boolean
+  asUseHint  Boolean
+  type       QuestionType
   createdAt  DateTime     @default(now())
-}
-
-model UserStats {
-  id          Int      @id @default(autoincrement())
-  userId      Int
-  user        User     @relation(fields: [userId], references: [id])
-  tagId       Int
-  tag         Tag      @relation(fields: [tagId], references: [id])
-  stats       Json     // Stocke totalTries, averageTime, successRate
-  /* Exemple de structure stats:
-  {
-    "totalTries": 42,
-    "averageTime": 120.5,  // en secondes
-    "successRate": 0.85,   // pourcentage en décimal
-    "lastAttempt": "2024-03-13T15:30:00Z",
-    "streaks": {
-      "current": 5,
-      "best": 12
-    },
-    "byDifficulty": {
-      "EASY": { "tries": 20, "successRate": 0.90 },
-      "MEDIUM": { "tries": 15, "successRate": 0.80 },
-      "HARD": { "tries": 7, "successRate": 0.60 }
-    }
-  }
-  */
-  updatedAt   DateTime @updatedAt
-  @@unique([userId, tagId])
 }
 
 enum Difficulty {
   EASY
   MEDIUM
   HARD
-}
-
-enum SessionStatus {
-  IN_PROGRESS
-  COMPLETED
-  ABANDONED
 }
 
 enum QuestionType {
